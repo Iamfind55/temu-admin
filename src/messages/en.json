@@ -1,0 +1,33 @@
+{
+  "globals": {
+    "_table_no": "No",
+    "_picture": "Picture",
+    "_name": "Name",
+    "_category": "Category",
+    "_brand": "Brand",
+    "_quantity": "Quantity",
+    "_price": "Price",
+    "_created_at": "Created at",
+    "_save_button": "Save",
+    "_order_no": "Order no",
+    "_customer": "Customer",
+    "_total_price": "Total price",
+    "_profit": "Profit",
+    "_discount": "Discount"
+  },
+
+  "admin": {
+    "_english": "English",
+    "_laos": "Laos"
+  },
+
+  "langing": {
+    "_dashboard": "Dashboard"
+  },
+
+  "deleteModal": {
+    "_delete_title": "Do you want to delete?",
+    "_no_cancel": "Canel",
+    "_yes_sure": "Yes"
+  }
+}

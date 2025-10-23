@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  admin-nextjs:
+    build:
+      context: .
+    restart: always 
+    networks:
+      - share-network
+    env_file:
+      - .env
+    volumes:
+      - ./public:/app/public
+      - ./.next:/app/.next
+    ports:
+      - "7000:7000"  # Bind container port 7000 to host port 7000
+networks:
+  share-network:
+    external: true

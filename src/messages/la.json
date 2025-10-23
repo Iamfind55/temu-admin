@@ -1,0 +1,22 @@
+{
+  "globals": {
+    "_table_no": "ລໍາດັບ",
+    "_picture": "ຮູບພາບ",
+    "_name": "ຊື່",
+    "_category": "ປະເພດ",
+    "_brand": "ແບຮນ",
+    "_quantity": "ຈໍານວນ",
+    "_price": "ລາຄາ",
+    "_created_at": "ວັນທີ່ສ້າງ",
+    "_save_button": "ບັນທືກ"
+  },
+
+  "admin": {
+    "_english": "ພາສາອັງກິດ",
+    "_laos": "ພາສາລາວ"
+  },
+
+  "langing": {
+    "_dashboard": "Dashboard"
+  }
+}
