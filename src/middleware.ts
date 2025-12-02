@@ -8,7 +8,7 @@ const protectedPaths = ["/admin"];
 const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(req: NextRequest) {
-  const userCookie = req.cookies.get("auth_token");
+  const userCookie = req.cookies.get("auth_token")?.value;
   const localeCookie = req.cookies.get("NEXT_LOCALE");
   const { pathname } = req.nextUrl;
 

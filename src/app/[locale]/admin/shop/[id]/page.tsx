@@ -478,7 +478,7 @@ export default function ShopDetails() {
                         accept=".jpg,.jpeg,.png"
                         id="cover-upload"
                         onChange={handleChangeCover}
-                        className="block w-full hidden"
+                        className="w-full hidden"
                       />
                       <label
                         htmlFor="cover-upload"

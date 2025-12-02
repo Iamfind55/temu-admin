@@ -36,9 +36,7 @@ const AddCategoryForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<ICategoryTypes[]>([]);
   const [formData, setFormData] = useState<CategoryFormData>({
-    name: {
-      name_en: "",
-    },
+    name: "",
     image: null,
     parent_id: null,
     recommended: true,
@@ -63,7 +61,7 @@ const AddCategoryForm = () => {
 
   useEffect(() => {
     if (categoryDatas?.getAllCategories?.success) {
-      setCategories([...categories, ...categoryDatas?.getAllCategories?.data]);
+      setCategories(categoryDatas?.getAllCategories?.data);
     }
   }, [categoryDatas?.getAllCategories?.data]);
 
@@ -75,9 +73,7 @@ const AddCategoryForm = () => {
       });
       setIsLoading(false);
       setFormData({
-        name: {
-          name_en: "",
-        },
+        name: "",
         image: null,
         parent_id: null,
         recommended: true,
@@ -105,7 +101,7 @@ const AddCategoryForm = () => {
     const newErrors: Record<string, string> = {};
 
     // Validate name
-    if (!formData.name.name_en.trim()) {
+    if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
@@ -201,18 +197,14 @@ const AddCategoryForm = () => {
     }
   };
 
-  const handleTranslateChange = (
+  const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "name",
-    lang: string
+    field: "name"
   ) => {
     const { value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [field]: {
-        ...prev[field],
-        [lang]: value,
-      },
+      [field]: value,
     }));
   };
 
@@ -269,22 +261,20 @@ const AddCategoryForm = () => {
 
           <div className="w-full">
             <div className="mt-2">
-              {Object.keys(formData.name).map((lang) => (
-                <div key={lang}>
-                  <label className="block text-sm text-gray-600">{`Name`}</label>
-                  <input
-                    type="text"
-                    name={`name_${lang}`}
-                    value={formData.name[lang]}
-                    onChange={(e) => handleTranslateChange(e, "name", lang)}
-                    className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                    placeholder="Name..."
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name}</p>
-                  )}
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm text-gray-600">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange(e, "name")}
+                  className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
+                  placeholder="Name..."
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
+                )}
+              </div>
             </div>
 
             <div>
@@ -309,11 +299,13 @@ const AddCategoryForm = () => {
                         <option value="">
                           Select a category {index === 0 ? "" : index + 1}
                         </option>
-                        {categories?.map((category, index) => (
-                          <option key={category.id + index} value={category.id}>
-                            {category.name.name_en}
-                          </option>
-                        ))}
+                        {categories
+                          ?.filter((category) => category.parent_id === parentId)
+                          ?.map((category, idx) => (
+                            <option key={category.id + idx} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   );

@@ -1,83 +1,105 @@
 import { gql } from "@apollo/client";
 
-export const GET_MAIN_CATEGORIES = gql`
-  query GetCategories(
-    $page: Int
-    $limit: Int
-    $sortedBy: BaseOrderByInput
-    $where: CategoryWhereInput
-  ) {
-    getCategories(
-      page: $page
-      limit: $limit
-      sortedBy: $sortedBy
-      where: $where
-    ) {
-      success
-      total
-      data {
+// export const GET_MAIN_CATEGORIES = gql`
+//   query GetCategories(
+//     $page: Int
+//     $limit: Int
+//     $sortedBy: BaseOrderByInput
+//     $where: CategoryWhereInput
+//   ) {
+//     getCategories(
+//       page: $page
+//       limit: $limit
+//       sortedBy: $sortedBy
+//       where: $where
+//     ) {
+//       success
+//       total
+//       data {
+//         id
+//         name
+//         image
+//         status
+//         parent_id
+//         created_by
+//         created_at
+//         updated_at
+//         recommended
+//       }
+//       error {
+//         message
+//         code
+//         details
+//       }
+//     }
+//   }
+// `;
+
+export const GET_SUB_CATEGORY = gql`
+query GetSubcategories($where: CategoryWhereInput, $limit: Int, $page: Int, $sortedBy: BaseOrderByInput) {
+  getSubcategories(where: $where, limit: $limit, page: $page, sortedBy: $sortedBy) {
+    success
+    total
+    data {
+      id
+      name
+      image
+      oring_image_url
+      status
+      parent_id
+      created_by
+      created_at
+      updated_at
+      recommended
+      parent_data {
         id
-        name {
-          name_en
-        }
-        image
-        status
-        parent_id
-        created_by
-        created_at
-        updated_at
-        recommended
-      }
-      error {
-        message
-        code
-        details
+      name
+      image
+      oring_image_url
+      status
+      parent_id
       }
     }
+    error {
+      message
+    }
   }
-`;
+}`
 
 export const GET_CATEGORIES = gql`
-  query AdminGetCategories(
-    $page: Int
-    $limit: Int
-    $sortedBy: BaseOrderByInput
-    $where: CategoryWhereInput
-  ) {
-    adminGetCategories(
-      page: $page
-      limit: $limit
-      sortedBy: $sortedBy
-      where: $where
-    ) {
-      success
-      total
-      data {
+  query Data($where: CategoryWhereInput) {
+  getCategories(where: $where) {
+    data {
+      id
+      image
+      name
+      status
+      oring_image_url
+      parent_data {
         id
-        name {
-          name_en
-        }
         image
-        status
-        parent_id
-        created_by
+        oring_image_url
+      }
+      subcategories {
+        name
+        image
+        oring_image_url
+        id
         created_at
-        updated_at
-        recommended
         parent_data {
           id
-          name {
-            name_en
-          }
+          name
         }
-      }
-      error {
-        message
-        code
-        details
+        subcategories {
+          name
+          image
+          id
+          oring_image_url
+        }
       }
     }
   }
+}
 `;
 
 export const GET_ALL_CATEGORIES = gql`
@@ -88,9 +110,7 @@ export const GET_ALL_CATEGORIES = gql`
       data {
         id
         parent_id
-        name {
-          name_en
-        }
+        name
       }
       error {
         message
@@ -101,6 +121,24 @@ export const GET_ALL_CATEGORIES = gql`
   }
 `;
 
+export const GET_MAIN_CATEGORIES = gql`query GetMainCategories($where: CategoryWhereInput, $page: Int, $limit: Int) {
+  getMainCategories(where: $where, page: $page, limit: $limit) {
+    success
+    total
+    data {
+      id
+      name
+      image
+      oring_image_url
+      status
+      parent_id
+      created_by
+      created_at
+      updated_at
+      recommended
+    }
+  }
+}`
 export const CREATED_CATEGORY = gql`
   mutation CreateCategory($data: CreateCategoryInput!) {
     createCategory(data: $data) {
@@ -108,9 +146,7 @@ export const CREATED_CATEGORY = gql`
       data {
         id
         image
-        name {
-          name_en
-        }
+        name
         recommended
         status
         parent_id
@@ -161,16 +197,28 @@ export const GET_CATEGORY = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
+        name
         image
         status
+        oring_image_url
         parent_id
         created_by
         created_at
         updated_at
         recommended
+         parent_data {
+        id
+        name
+        image
+        oring_image_url
+        status
+        parent_id
+          parent_data {
+          id
+          image
+          oring_image_url
+          }
+        }
       }
       error {
         message
@@ -180,3 +228,4 @@ export const GET_CATEGORY = gql`
     }
   }
 `;
+

@@ -482,7 +482,7 @@ export default function Customer() {
           <div className="w-full hidden sm:block">
             {fetchCustomers.total ?? 0 > 0 ? (
               <table className="w-full bg-gray overflow-x-auto text-left text-sm rtl:text-right border rounded">
-                <thead className="sticky top-0 text-xs bg-white">
+                <thead className="sticky -top-5 text-xs bg-white">
                   <tr className="border-b border-gray text-left uppercase">
                     <th scope="col" className="py-3 pl-1 text-center">
                       id
@@ -518,9 +518,8 @@ export default function Customer() {
                   {fetchCustomers?.data?.map((customer, index) => (
                     <tr
                       key={customer.id + index}
-                      className={`border-b border-gray bg-white hover:bg-gray py-6 text-gray-500 ${
-                        customer.status === "INACTIVE" && "text-red-500"
-                      }`}
+                      className={`border-b border-gray bg-white hover:bg-gray py-6 text-gray-500 ${customer.status === "INACTIVE" && "text-red-500"
+                        }`}
                     >
                       <td className="py-3 pl-1 text-center">{index + 1}</td>
                       <td className="flex items-center justify-start gap-2 py-3 pl-1">
@@ -528,8 +527,8 @@ export default function Customer() {
                           className="shadow-md rounded"
                           src={
                             customer.image &&
-                            typeof customer.image === "string" &&
-                            customer.image.startsWith("http")
+                              typeof customer.image === "string" &&
+                              customer.image.startsWith("http")
                               ? customer.image
                               : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
                           }
@@ -538,14 +537,13 @@ export default function Customer() {
                           height={30}
                         />
 
-                        <p>{customer.firstName + " " + customer.lastName}</p>
+                        <p>{customer.firstName ?? "" + " " + customer.lastName ?? ""}</p>
                       </td>
                       <td
-                        className={`py-3 pl-1 ${
-                          customer.customer_type === "FAKE"
+                        className={`py-3 pl-1 ${customer.customer_type === "FAKE"
                             ? "text-red-500"
                             : "text-green-500"
-                        }`}
+                          }`}
                       >
                         {customer.customer_type}
                       </td>
@@ -872,9 +870,8 @@ export default function Customer() {
                 isFront={true}
                 title="Create"
                 icon={isLoading ? <Loading /> : ""}
-                className={`rounded ${
-                  isUpdate ? "bg-neon_pink" : "bg-green-500"
-                } text-white w-auto text-sm hover:font-medium hover:shadow-md`}
+                className={`rounded ${isUpdate ? "bg-neon_pink" : "bg-green-500"
+                  } text-white w-auto text-sm hover:font-medium hover:shadow-md`}
               />
             </div>
           </form>
@@ -913,8 +910,8 @@ export default function Customer() {
                   isLoading
                     ? "BLOCKING...."
                     : customerData?.status === "INACTIVE"
-                    ? "UNBLOCK"
-                    : "BlOCK"
+                      ? "UNBLOCK"
+                      : "BlOCK"
                 }
                 onClick={() => handleBlockAndUnblockCustomer()}
                 className="w-auto rounded bg-neon_pink text-white p-2 text-xs"

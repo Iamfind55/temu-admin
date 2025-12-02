@@ -35,6 +35,7 @@ export default function Category() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<ICategoryTypes>();
   const [categories, setCategories] = useState<ICategoryTypes[]>();
+  const [imageLoadingStates, setImageLoadingStates] = useState<Record<string, boolean>>({});
 
   const {
     filters,
@@ -47,9 +48,12 @@ export default function Category() {
   } = useCategoryFilters();
 
   useEffect(() => {
-    if (data?.adminGetCategories?.data)
-      setCategories(data?.adminGetCategories?.data);
-  }, [data?.adminGetCategories?.data]);
+    if (data?.
+      getSubcategories?.data)
+      setCategories(data?.
+        getSubcategories?.data);
+  }, [data?.
+    getSubcategories?.data]);
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -104,7 +108,7 @@ export default function Category() {
 
   if (error) return <p>Error: {error.message}</p>;
 
-  const totalItems: number = data?.adminGetCategories?.total;
+  const totalItems: number = data?.getSubcategories?.total;
 
   return (
     <div className="space-y-2 flex items-start justify-start flex-col gap-4">
@@ -138,7 +142,7 @@ export default function Category() {
               placeholder="Search by keyword"
               onChange={handleSearchInput}
               onKeyDown={handleKeyPress}
-              className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+              className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
             />
           </div>
           <div className="flex gap-4">
@@ -152,7 +156,7 @@ export default function Category() {
                     filters.dateRange?.endDate || ""
                   )
                 }
-                className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+                className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
               />
             </div>
             <div>
@@ -165,7 +169,7 @@ export default function Category() {
                     e.target.value
                   )
                 }
-                className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+                className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
               />
             </div>
           </div>
@@ -174,7 +178,7 @@ export default function Category() {
           <p className="text-sm text-gray-500">Sort</p>
           <select
             onChange={(e) => updateSortBy(e.target.value)}
-            className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+            className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
           >
             <option value="created_at_DESC">Created At (Newest)</option>
             <option value="created_at_ASC">Created At (Oldest)</option>
@@ -182,7 +186,7 @@ export default function Category() {
         </div>
       </div>
 
-      <div className="w-full bg-white w-auto h-auto rounded-md">
+      <div className="w-full bg-white h-auto rounded-md">
         <div className="w-full h-full overflow-y-auto">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
             <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
@@ -212,28 +216,38 @@ export default function Category() {
             </thead>
             <tbody>
               {categories?.map((category, index) => {
+                const imageLoading = imageLoadingStates[category?.id] ?? true;
+
                 return (
                   <tr className="bg-white border-b" key={category?.id}>
                     <th scope="row" className="px-6 py-4">
                       {(filters.page - 1) * filters.limit + index + 1}
                     </th>
                     <td className="px-6 py-4">
-                      <img
-                        src={
-                          category?.image
-                            ? category?.image
-                            : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
-                        }
-                        width={60}
-                        height={60}
-                        alt="Picture of the category"
-                      />
+                      <div className="relative w-[60px] h-[60px]">
+                        {imageLoading && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+                          </div>
+                        )}
+                        <img
+                          src={
+                            category?.oring_image_url ||
+                            "/images/placeholder_image.png"}
+                          width={60}
+                          height={60}
+                          alt="Picture of the category"
+                          onLoad={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
+                          onError={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
+                          className={imageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-200"}
+                        />
+                      </div>
                     </td>
                     <td className="px-6 py-4 truncate max-w-xs">
-                      {category?.name?.name_en}
+                      {category?.name}
                     </td>
                     <td className="px-6 py-4 truncate max-w-xs">
-                      {category?.parent_data?.name?.name_en}
+                      {category?.parent_data?.name}
                     </td>
                     <td className="px-6 py-4 truncate max-w-xs">
                       {<StatusBadge status={category.status} />}
@@ -241,17 +255,19 @@ export default function Category() {
                     <td className="px-6 py-4">
                       {formatDateToDDMMYYYY(category?.created_at)}
                     </td>
-                    <td className="flex space-x-2 px-6 py-4 gap-2">
-                      <EditIcon
-                        onClick={() => handleClickEditCategory(category)}
-                        size={20}
-                        className="cursor-pointer"
-                      />
-                      <TrashIcon
-                        onClick={() => handleSelectCategory(category)}
-                        size={20}
-                        className="cursor-pointer"
-                      />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <EditIcon
+                          onClick={() => handleClickEditCategory(category)}
+                          size={20}
+                          className="cursor-pointer"
+                        />
+                        <TrashIcon
+                          onClick={() => handleSelectCategory(category)}
+                          size={20}
+                          className="cursor-pointer"
+                        />
+                      </div>
                     </td>
                   </tr>
                 );

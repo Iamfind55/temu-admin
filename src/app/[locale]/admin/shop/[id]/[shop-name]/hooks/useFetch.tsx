@@ -13,7 +13,11 @@ const useFetchShopProducts = ({ filter }: { filter: IProductFilter }) => {
       fetchPolicy: "no-cache",
     });
 
+
   const fetchShopProducts = () => {
+    if (!shop_id) {
+      return
+    }
     getShopProducts({
       variables: {
         orderBy: "created_at_DESC",

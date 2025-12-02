@@ -192,8 +192,6 @@ export default function OrderPageList() {
 
   const totalItems: number = data?.adminGetOrders?.total;
 
-  console.log(filteredOrders);
-
 
   return (
     <div className="space-y-2 flex items-start justify-start flex-col gap-4">

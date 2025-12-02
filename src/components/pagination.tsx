@@ -48,7 +48,7 @@ const Pagination = ({ filter, totalItems, onPageChange }: PaginationType) => {
             className={`rounded-full px-4 py-1 ${
               currentPage === 1
                 ? "cursor-not-allowed opacity-50"
-                : "hover:bg-base hover:text-blue-400"
+                : "hover:bg-base hover:text-white"
             }`}
             onClick={handlePreviousClick}
             disabled={currentPage === 1}
@@ -61,7 +61,7 @@ const Pagination = ({ filter, totalItems, onPageChange }: PaginationType) => {
         {startPage > 1 && (
           <li>
             <button
-              className="rounded-full px-4 py-1 hover:bg-base hover:blue-400"
+              className="rounded-full px-4 py-1 hover:bg-base hover:text-white"
               onClick={() => onPageChange(1)}
             >
               1
@@ -83,7 +83,7 @@ const Pagination = ({ filter, totalItems, onPageChange }: PaginationType) => {
               className={`rounded-full px-3 py-1 ${
                 currentPage === page
                   ? "bg-base text-white"
-                  : "hover:bg-base hover:text-blue-400"
+                  : "hover:bg-base hover:text-white"
               }`}
               onClick={() => onPageChange(page)}
             >
@@ -117,7 +117,7 @@ const Pagination = ({ filter, totalItems, onPageChange }: PaginationType) => {
             className={`rounded-full px-3 py-1 ${
               currentPage === totalPages
                 ? "cursor-not-allowed opacity-50"
-                : "hover:bg-base hover:white"
+                : "hover:bg-base hover:text-white"
             }`}
             onClick={handleNextClick}
             disabled={currentPage === totalPages}

@@ -114,7 +114,7 @@ export default function RootLayout({
     },
     {
       icon: <DepositIcon size={16} />,
-      menu: "Manage Transection",
+      menu: "Manage transaction",
       route: "/admin/transaction",
     },
     {
@@ -405,7 +405,7 @@ export default function RootLayout({
 
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full sm:w-4/5">
           <div className="w-full h-[10vh] flex border-b items-cente justify-end px-4 bg-base">
             <div className="flex items-center mr-10">
               <div
@@ -433,7 +433,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-          <div className="h-[90vh] w-full p-4 bg-bg_color overflow-x-scroll pb-20 sm:pb-2">
+          <div className="h-[90vh] w-full p-4 bg-bg_color overflow-auto pb-20 sm:pb-2">
             {children}
           </div>
         </div>

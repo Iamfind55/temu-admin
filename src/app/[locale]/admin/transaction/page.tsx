@@ -37,6 +37,7 @@ import {
   MUTATION_ADMIN_APPROVE_TRANSACTION,
   MUTATION_ADMIN_REJECT_TRANSACTION,
   QUERY_ADMIN_GET_TRANSACTION,
+  QUERY_ADMIN_GET_TRANSACTIONS,
 } from "@/api/transaction";
 import { useDispatch } from "react-redux";
 import { removeTransactionAmount } from "@/redux/slice/amountSlice";
@@ -143,6 +144,9 @@ export default function Transactions() {
   };
 
   React.useEffect(() => {
+    if (!transactionId) {
+      return
+    }
     queryTransaction({
       variables: {
         adminGetTransactionHistoryId: transactionId,
@@ -267,7 +271,7 @@ export default function Transactions() {
             </tr>
           </thead>
           <tbody>
-            {fetchTransaction?.data?.map((shop, index) => {
+            {fetchTransaction?.data && fetchTransaction?.data?.map((shop, index) => {
               return (
                 <tr key={index + 1} className="bg-white border-b">
                   <th scope="row" className="px-6 py-4">
@@ -277,8 +281,8 @@ export default function Transactions() {
                     <Image
                       className="shadow-md rounded cursor-pointer"
                       src={
-                        shop.payment_slip
-                          ? shop.payment_slip
+                        shop?.payment_slip
+                          ? shop?.payment_slip
                           : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
                       }
                       alt="default"
@@ -293,9 +297,9 @@ export default function Transactions() {
                       shop?.shop?.store_name
                     ) : (
                       <span>
-                        {shop?.customer?.firstName +
+                        {shop?.customer?.firstName ?? "" +
                           " " +
-                          shop?.customer?.lastName}
+                          shop?.customer?.lastName ?? ""}
                       </span>
                     )}
                   </td>
@@ -313,7 +317,7 @@ export default function Transactions() {
                     {formatDateToDDMMYYYY(shop?.created_at)}
                   </td>
                   <td className="px-6 py-4 truncate max-w-xs">
-                    <StatusBadge status={shop.transaction_status} />
+                    <StatusBadge status={shop?.status} />
                   </td>
                   <td className="flex space-x-2 px-6 pt-7 pb-4">
                     <div
@@ -328,19 +332,24 @@ export default function Transactions() {
                         className="cursor-pointer text-yellow-500"
                       />
                     </div>
-                    <div
+                    <button
+                      disabled={shop?.status !== "PENDING"}
+                      type="button"
                       onClick={() => {
+                        if (shop?.status !== "PENDING") {
+                          return
+                        }
                         setRow(shop);
                         handleOpenModal();
                       }}
-                      className="flex items-center justify-center bg-green-100 py-1 px-2 rounded text-green-500 gap-1 cursor-pointer"
+                      className="flex items-center justify-center bg-green-100 py-1 px-2 rounded gap-1 text-green-500 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-500 disabled:bg-gray-100 disabled:opacity-60"
                     >
                       <CheckCircleIcon
                         size={16}
-                        className="cursor-pointer text-green-500"
+                        className={shop?.status !== "PENDING" ? "text-gray-400" : "text-green-500"}
                       />
                       Confirm
-                    </div>
+                    </button>
                   </td>
                 </tr>
               );
@@ -453,8 +462,8 @@ export default function Transactions() {
                       </li>
                       <li>
                         <strong>Created at:</strong>&nbsp;
-                        {data?.adminGetTransactionHistory?.data?.customer
-                          ?.created_at ?? "N/A"}
+                        {formatDateToDDMMYYYY(data?.adminGetTransactionHistory?.data?.customer
+                          ?.created_at) ?? "N/A"}
                       </li>
                     </ul>
                   </div>
@@ -525,8 +534,8 @@ export default function Transactions() {
                       </li>
                       <li>
                         <strong>Created at:</strong>&nbsp;
-                        {data?.adminGetTransactionHistory?.data?.shop
-                          ?.created_at ?? "N/A"}
+                        {formatDateToDDMMYYYY(data?.adminGetTransactionHistory?.data?.shop
+                          ?.created_at) ?? "N/A"}
                       </li>
                     </ul>
                   </div>
@@ -555,7 +564,7 @@ export default function Transactions() {
                     <StatusBadge
                       status={
                         data?.adminGetTransactionHistory?.data
-                          ?.transaction_status ?? "Unknown"
+                          ?.status ?? "Unknown"
                       }
                     />
                   </li>

@@ -32,7 +32,7 @@ export interface TokenData {
 }
 
 export interface NameTranslateBase {
-  name_en: string;
+  name: string;
   name_es: string;
   name_ms: string;
   name_jp: string;

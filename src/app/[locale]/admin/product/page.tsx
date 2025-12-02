@@ -218,9 +218,9 @@ export default function Product() {
           <EmptyPage />
         </div>
       ) : (
-        <div className="w-full bg-white w-auto h-screen rounded-md">
-          <div className="w-full h-full overflow-y-auto">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
+        <div className="w-full bg-white rounded-md overflow-hidden">
+          <div className="w-full max-h-[calc(100vh-200px)] overflow-x-auto overflow-y-auto">
+            <table className="min-w-max w-full text-sm text-left rtl:text-right text-gray-500 border">
               <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
                 <tr>
                   <th scope="col" className="px-6 py-3">
@@ -260,6 +260,7 @@ export default function Product() {
               </thead>
               <tbody>
                 {products?.map((product, index) => {
+                  
                   return (
                     <tr className="bg-white border-b" key={product?.id}>
                       <th scope="row" className="px-6 py-4">
@@ -267,18 +268,18 @@ export default function Product() {
                       </th>
                       <td className="px-6 py-4">
                         <img
-                          src={product?.cover_image}
+                          src={product?.image_url??product?.origin_image_url}
                           width={60}
                           height={60}
                           alt="Picture of the product"
                         />
                       </td>
-                      <td className="px-6 py-4">{product?.name?.name_en}</td>
+                      <td className="px-6 py-4 truncate max-w-xs">{product?.name}</td>
                       <td className="px-6 py-4 truncate max-w-xs">
-                        {product?.categoryData?.name?.name_en}
+                        {product?.categoryData?.name}
                       </td>
                       <td className="px-6 py-4 truncate max-w-xs">
-                        {product?.brandData?.name?.name_en || ""}
+                        {product?.brandData?.name|| ""}
                       </td>
                       <td className="px-6 py-4 truncate max-w-xs">
                         {product?.product_vip || "0"}
@@ -289,8 +290,9 @@ export default function Product() {
                       <td className="px-6 py-4">
                         {formatDateToDDMMYYYY(product?.created_at)}
                       </td>
-                      <td className="flex items-center space-x-2 px-6 py-4">
-                        <EditIcon
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-2">
+                          <EditIcon
                           onClick={() => handleClickEditProduct(product)}
                           size={20}
                           className="cursor-pointer my-2"
@@ -300,6 +302,7 @@ export default function Product() {
                           size={20}
                           className="cursor-pointer my-2"
                         />
+                        </div>
                       </td>
                     </tr>
                   );

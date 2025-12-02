@@ -17,9 +17,7 @@ export const GET_BRANDINGS = gql`
       total
       data {
         id
-        name {
-          name_en
-        }
+        name
         image
         status
         created_by
@@ -41,9 +39,7 @@ export const CREATED_BRANDING = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
+        name
         image
         status
         created_by
@@ -81,9 +77,7 @@ export const UPDATE_BRANDING = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
+        name
         image
         status
         created_by
@@ -105,9 +99,7 @@ export const GET_BRANDING = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
+        name 
         image
         status
         created_by

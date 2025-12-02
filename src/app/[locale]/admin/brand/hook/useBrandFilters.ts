@@ -15,7 +15,7 @@ export const useBrandFilters = () => {
     dateRange: { startDate: "", endDate: "" },
     sortBy: "created_at_DESC",
     page: 1,
-    limit: 10,
+    limit: 50,
   });
   const [selectedBradingId, setSelectedBradingId] = useState<string>();
 

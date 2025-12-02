@@ -94,6 +94,7 @@ const OrderDetailsPage = ({ params }: { params: any }) => {
   if (orderDetailDatasLoading) return <Loading />;
 
   const orderDetails = orderDetailsData?.adminGetOrderDetails?.data;
+  console.log(orderDetails);
 
   return (
     <div className="container mx-auto p-4 text-gray-500">
@@ -137,12 +138,12 @@ const OrderDetailsPage = ({ params }: { params: any }) => {
               </p>
               <div className="flex items-center space-x-4 mb-4">
                 <img
-                  src={order.product_cover_image}
-                  alt={order.product_name}
+                  src={order?.product?.origin_image_url ||""}
+                  alt={order.name}
                   className="w-16 h-16 object-cover rounded"
                 />
-                <p className="text-md font-semibold">
-                  {JSON.parse(order.product_name).name_en}
+                <p className="text-md font-semibold truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                  {order?.product?.name}
                 </p>
               </div>
               <div className="mt-2 grid grid-cols-1 gap-1 text-sm">

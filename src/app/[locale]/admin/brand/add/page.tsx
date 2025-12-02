@@ -28,7 +28,7 @@ const AddBrandPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<IBrandingFormData>({
     name: {
-      name_en: "",
+      name: "",
     },
     image: null,
   });
@@ -38,7 +38,7 @@ const AddBrandPage = () => {
     if (createBrandingData?.createBranding?.success) {
       setFormData({
         name: {
-          name_en: "",
+          name: "",
         },
         image: null,
       });
@@ -80,7 +80,7 @@ const AddBrandPage = () => {
     const newErrors: Record<string, string> = {};
 
     // Validate name
-    if (!formData.name.name_en.trim()) {
+    if (!formData.name.name.trim()) {
       newErrors.name = "Name is required";
     }
 
@@ -121,7 +121,7 @@ const AddBrandPage = () => {
 
     // setFormData({
     //   name: {
-    //     name_en: "",
+    //     name: "",
     //   },
     //   image: null,
     // });

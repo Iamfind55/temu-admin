@@ -8,7 +8,11 @@
     "_quantity": "ຈໍານວນ",
     "_price": "ລາຄາ",
     "_created_at": "ວັນທີ່ສ້າງ",
-    "_save_button": "ບັນທືກ"
+    "_save_button": "ບັນທືກ",
+    "_customer": "ລູກຄ້າ",
+    "_total_price": "ລາຄາລວມ",
+    "_profit": "ກຳໄລ",
+    "_discount": "ສ່ວນລຸດ"
   },
 
   "admin": {

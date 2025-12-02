@@ -3,17 +3,14 @@ export interface IBrandingTypes {
   created_at: string;
   updated_at: string;
   created_by: string;
-  name: {
-    name_en: string;
-    name_la: string;
-  };
+  name: string;
   status: string;
   image: string;
 }
 
 export interface IBrandingFormData {
   id?: string;
-  name: { [key: string]: string };
+  name: string;
   image: string | null;
   status?: string;
 }

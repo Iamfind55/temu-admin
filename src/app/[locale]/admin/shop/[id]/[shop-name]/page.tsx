@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
 import { RootState } from "@/redux/store";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 // Apollo and APIs
 import { GET_SHOP } from "@/api/shop";
-import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   CartIcon,
   MinusIcon,
@@ -18,32 +17,32 @@ import {
   TrashIcon,
 } from "@/icons/page";
 import { useToast } from "@/utils/toast";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import useFilter from "./hooks/useFilter";
 
 // components
-import Select from "@/components/select";
-import EmptyPage from "@/components/emptyPage";
 import Breadcrumb from "@/components/breadCrumb";
+import EmptyPage from "@/components/emptyPage";
 import IconButton from "@/components/iconButton";
 import ProductCard from "@/components/productCard";
-import useFetchShopProducts from "./hooks/useFetch";
-import { GetShopProductData } from "@/types/product";
+import SearchableSelect from "@/components/searchableSelect";
 import ShopProductPagination from "@/components/shopProductPagination";
+import { GetShopProductData } from "@/types/product";
+import useFetchShopProducts from "./hooks/useFetch";
 
 // api
+import {
+  QUERY_ALL_CUSTOMERS,
+  QUERY_GET_CUSTOMER_ADDRESS,
+} from "@/api/customer";
+import { MUTATION_ADMIN_GIVE_ORDER_TO_SHOP } from "@/api/order";
 import {
   clearCart,
   decreaseQuantity,
   increaseQuantity,
   removeFromCart,
 } from "@/redux/slice/cartSlice";
-import { truncateText } from "@/utils/letterLimitation";
 import { GetCustomerResponse } from "@/types/customer";
-import {
-  QUERY_GET_CUSTOMER_ADDRESS,
-  QUERY_ALL_CUSTOMERS,
-} from "@/api/customer";
-import { MUTATION_ADMIN_GIVE_ORDER_TO_SHOP } from "@/api/order";
 
 const ShopPage = () => {
   const params = useParams();
@@ -97,6 +96,7 @@ const ShopPage = () => {
     //   errorMessage({ message: "Please select address!" });
     //   return;
     // }
+    console.log(fetchShopProducts.data);
 
     try {
       setIsLoading(true);
@@ -140,16 +140,16 @@ const ShopPage = () => {
   React.useEffect(() => {
     filter.dispatch({
       type: filter.ACTION_TYPE.SHOP_ID,
-      payload: Array.isArray(params.id)
+      payload: Array.isArray(params?.id)
         ? params.id[0] ?? null
-        : params.id ?? null,
+        : params?.id ?? null,
     });
   }, []);
 
   React.useEffect(() => {
     getShop({
       variables: {
-        adminGetShopId: params.id,
+        adminGetShopId: params?.id,
       },
     });
   }, [getShop]);
@@ -214,13 +214,15 @@ const ShopPage = () => {
     });
   }, [getCustomers]);
 
-  // Re-format the structure of customer for Select
-  const customerNewFormat = customerData?.getCustomers?.data.map(
+  // Re-format the structure of customer for SearchableSelect
+  const customerOptions = customerData?.getCustomers?.data.map(
     (customer) => ({
-      label: customer.firstName + " " + customer.lastName,
+      label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
       value: customer.id,
     })
-  );
+  ) || [];
+
+  console.log(fetchShopProducts.data);
 
   return (
     <>
@@ -234,11 +236,11 @@ const ShopPage = () => {
         />
 
         <div className="w-full flex items-start justify-start rounded gap-4">
-          <div className="w-3/5 w-full bg-white flex items-start justify-start flex-col gap-4 p-3 rounded shadow-md">
+          <div className="w-full bg-white flex items-start justify-start flex-col gap-4 p-3 rounded shadow-md">
             <div className="w-full flex items-start justify-between">
               <p className="text-sm">
                 List of all product on{" "}
-                <span className="text-neon_pink">{params["shop-name"]}</span>{" "}
+                <span className="text-neon_pink">{params?.["shop-name"]}</span>{" "}
                 shop:
               </p>
               <div className="w-1/2 flex items-start justify-center gap-2">
@@ -263,16 +265,10 @@ const ShopPage = () => {
               </div>
             </div>
             {fetchShopProducts.total ?? 0 > 0 ? (
-              <div className="w-full h-auto grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-5">
+              <div className="w-full h-auto grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-5">
                 {fetchShopProducts?.data?.map((product: GetShopProductData) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    price={product.productData.price}
-                    name={product.productData.name}
-                    description={product.productData.description}
-                    cover_image={product.productData.cover_image}
-                    quantity={product.quantity}
+                  <ProductCard key={product.id}
+                    {...product}
                   />
                 ))}
               </div>
@@ -319,9 +315,9 @@ const ShopPage = () => {
                 {cartItems?.map((val, index) => (
                   <div
                     key={index + 1}
-                    className="w-full border-b text-sm flex items-center justify-between px-2 my-2"
+                    className="w-full border-b text-sm flex items-center justify-between gap-2 px-2 my-2"
                   >
-                    <p className="text-xs">{truncateText(val.name, 20)}</p>
+                    <p className="text-xs truncate max-w-[120px]">{val.name}</p>
                     <div className="flex items-center justify-start gap-6 rounded py-2 px-4">
                       <button
                         type="button"
@@ -356,16 +352,13 @@ const ShopPage = () => {
             </div>
             <div className="w-full bg-white p-3 rounded shadow-md flex items-start justify-start gap-4 flex-col">
               <div className="w-full flex items-start justify-start flex-col gap-2">
-                <p className="text-sm">Select customer to give order:</p>
-                {customerNewFormat && customerNewFormat.length > 0 && (
-                  <Select
-                    name="status"
-                    title="Customer"
-                    option={customerNewFormat}
-                    className="py-1"
-                    onChange={(e) => setCustomerId(e.target.value)}
-                  />
-                )}
+                <SearchableSelect
+                  label="Select customer to give order:"
+                  options={customerOptions}
+                  value={customerId}
+                  onChange={(value) => setCustomerId(value)}
+                  placeholder="Select a customer"
+                />
               </div>
               <div className="w-full flex items-start justify-start gap-2 border rounded p-2">
                 <div>
@@ -391,7 +384,7 @@ const ShopPage = () => {
                   <p>
                     Shop name:&nbsp;
                     <span className="text-neon_pink">
-                      {params["shop-name"]}&nbsp; (VIP-
+                      {params?.["shop-name"]}&nbsp; (VIP-
                       {data?.adminGetShop?.data.shop_vip})
                     </span>
                   </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client";
@@ -34,6 +34,24 @@ export default function SignIn() {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/check-auth", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (res.status == 200) {
+          router.push("/admin");
+        }
+      } catch (err) {
+        console.log(err);
+
+      }
+    };
+
+    checkAuth();
+  }, []);
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -137,12 +155,12 @@ export default function SignIn() {
 
             <div className="my-5">
               <IconButton
-              className="rounded text-white p-2 bg-neon_pink w-full py-4 text-xs"
-              icon={isLoading ? "" : <NextIcon size={22} />}
-              isFront={isLoading ? true : false}
-              title={isLoading ? "Loging...." : "Login"}
-              type="submit"
-            />
+                className="rounded text-white p-2 bg-neon_pink w-full py-4 text-xs"
+                icon={isLoading ? "" : <NextIcon size={22} />}
+                isFront={isLoading ? true : false}
+                title={isLoading ? "Loging...." : "Login"}
+                type="submit"
+              />
             </div>
           </form>
         </div>

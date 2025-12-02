@@ -1,44 +1,71 @@
 import { gql } from "@apollo/client";
 
 export const QUERY_ADMIN_GET_TRANSACTIONS = gql`
-  query AdminGetTransactionHistories(
-    $page: Int
-    $limit: Int
-    $sortedBy: BaseOrderByInput
-    $where: TransactionHistoryWhereInput
-  ) {
-    adminGetTransactionHistories(
-      page: $page
-      limit: $limit
-      sortedBy: $sortedBy
-      where: $where
-    ) {
-      success
-      total
-      data {
+  query Data($where: TransactionHistoryWhereInput) {
+  adminGetTransactionHistories(where: $where) {
+    total
+    data {
+      id
+      identifier
+      amount
+      coin_type
+      payment_slip
+      wallet_id
+      status
+      shop_id
+      customer_id
+      account_number
+      created_by
+      created_at
+      updated_at
+      customer {
         id
-        amount
-        coin_type
+        firstName
+        lastName
+        username
+        email
+        phone_number
+        dob
+        image
+        customer_address
         status
-        payment_slip
-        transaction_status
-        identifier
+        customer_type
+        created_by
         created_at
-        customer {
-          firstName
-          lastName
-        }
-        shop {
-          store_name
-        }
+        updated_at
       }
-      error {
-        message
-        code
-        details
+      shop {
+        id
+        fullname
+        store_name
+        username
+        phone_number
+        email
+        dob
+        remark
+        shop_address
+        status
+        shop_vip
+        profit
+        created_by
+        created_at
+        updated_at
+        request_vip_data {
+          request_vip
+          request_status
+          requested_at
+          profit
+        }
+        totalFollower
+        totalProduct
       }
     }
+    error {
+      message
+      code
+    }
   }
+}
 `;
 
 export const QUERY_ADMIN_GET_TRANSACTION = gql`
@@ -52,7 +79,6 @@ export const QUERY_ADMIN_GET_TRANSACTION = gql`
         identifier
         payment_slip
         status
-        transaction_status
         wallet_id
         created_at
         shop_id

@@ -1,51 +1,63 @@
 import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
-  query AdminGetProducts(
-    $page: Int
-    $limit: Int
-    $sortedBy: BaseOrderByInput
-    $where: ProductWhereInput
-  ) {
-    adminGetProducts(
-      page: $page
-      limit: $limit
-      sortedBy: $sortedBy
-      where: $where
-    ) {
-      success
-      total
-      data {
+  query Data($page: Int, $limit: Int, $where: ProductWhereInput, $sortedBy: BaseOrderByInput) {
+  adminGetProducts(page: $page, limit: $limit, where: $where, sortedBy: $sortedBy) {
+    total
+    data {
+      id
+      name
+      images
+      image_url
+      origin_image_url
+      price
+      market_price
+      price_str
+      currency
+      show_price
+      discount
+      discount_end
+      quantity
+      sku
+      spu
+      total_star
+      total_comment
+      star_store
+      categoryData {
         id
-        name {
-          name_en
-        }
-        cover_image
-        price
-        sell_count
-        product_vip
-        quantity
-        created_at
-        updated_at
-        categoryData {
-          id
-          name {
-            name_en
-          }
-        }
-        brandData {
-          name {
-            name_en
-          }
-        }
+        name
       }
-      error {
-        message
-        code
-        details
+      productTag {
+        id
+        text_rich
+        local_title
+        content
+        prompt_tag_text
+        footer_text
+        header_text
       }
+      brandData {
+        id
+        name
+      }
+      brand_id
+      status
+      shopProductStatus
+      recommended
+      product_top
+      product_vip
+      sell_count
+      created_by
+      created_at
+      updated_at
+    }
+    error {
+      code
+      message
+      details
     }
   }
+}
 `;
 
 export const GET_PRODUCT = gql`
@@ -54,14 +66,9 @@ export const GET_PRODUCT = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
-        description {
-          name_en
-        }
+        name
         images
-        cover_image
+        image_url
         price
         discount
         quantity
@@ -72,15 +79,11 @@ export const GET_PRODUCT = gql`
         category_ids
         categoryData {
           id
-          name {
-            name_en
-          }
+          name
         }
         brandData {
           id
-          name {
-            name_en
-          }
+          name
         }
         brand_id
         status
@@ -107,14 +110,8 @@ export const CREATED_PRODUCT = gql`
       success
       data {
         id
-        name {
-          name_en
-        }
-        description {
-          name_en
-        }
+        name
         images
-        cover_image
         price
         discount
         quantity
@@ -173,42 +170,68 @@ export const UPDATE_PRODUCT = gql`
   }
 `;
 
-export const GET_SHOP_PRODUCTS = gql`
-  query GetShopProducts(
-    $page: Int
-    $limit: Int
-    $sortedBy: BaseOrderByInput
-    $where: ShopProductWhereInput
-  ) {
-    getShopProducts(
-      page: $page
-      limit: $limit
-      sortedBy: $sortedBy
-      where: $where
-    ) {
-      success
-      total
-      data {
+export const GET_SHOP_PRODUCTS = gql`query Data($where: ShopProductWhereInput, $page: Int, $limit: Int) {
+  getShopProducts(where: $where, page: $page, limit: $limit) {
+    total
+    data {
+      id
+      quantity
+      product_id
+      productData {
         id
-        productData {
-          id
-          name {
-            name_en
-          }
-          cover_image
-          description {
-            name_en
-          }
-          price
-        }
+        name
+        images
+        origin_image_url
+        price
+        market_price
+        price_str
+        currency
+        show_price
+        discount
+        discount_end
         quantity
-        product_id
+        sku
+        spu
+        total_star
+        total_comment
+        star_store
+        category_ids
+        productTag {
+          id
+          text_rich
+          local_title
+          content
+          prompt_tag_text
+          footer_text
+          header_text
+        }
+        brandData {
+          id
+          name
+        }
+        status
+        shopProductStatus
+        recommended
+        product_top
+        product_vip
+        sell_count
+        created_by
+        created_at
+        updated_at
       }
-      error {
-        message
-        code
-        details
-      }
+      shop_id
+      status
+      created_by
+      created_at
+      updated_at
+      sell_count
+      shopProductStatus
+    }
+    error {
+      code
+      message
+      details
     }
   }
+}
 `;

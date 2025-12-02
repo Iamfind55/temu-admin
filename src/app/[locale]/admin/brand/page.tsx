@@ -134,7 +134,7 @@ export default function BrandPageList() {
               placeholder="Search by keyword"
               onChange={handleSearchInput}
               onKeyDown={handleKeyPress}
-              className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+              className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
             />
           </div>
           <div className="flex gap-4">
@@ -148,7 +148,7 @@ export default function BrandPageList() {
                     filters.dateRange?.endDate || ""
                   )
                 }
-                className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+                className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
               />
             </div>
             <div>
@@ -161,7 +161,7 @@ export default function BrandPageList() {
                     e.target.value
                   )
                 }
-                className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+                className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
               />
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function BrandPageList() {
           <p className="text-sm text-gray-500">Sort</p>
           <select
             onChange={(e) => updateSortBy(e.target.value)}
-            className="h-9 text-sm p-2 rounded w-full border border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+            className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
           >
             <option value="created_at_DESC">Created At (Newest)</option>
             <option value="created_at_ASC">Created At (Oldest)</option>
@@ -179,16 +179,13 @@ export default function BrandPageList() {
       </div>
 
       {/* Table */}
-      <div className="w-full bg-white w-auto h-auto rounded-md">
+      <div className="w-full bg-white h-auto rounded-md">
         <div className="w-full h-full overflow-y-auto">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
             <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   {g("_table_no")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_picture")}
                 </th>
                 <th scope="col" className="px-6 py-3">
                   {g("_name")}
@@ -211,23 +208,8 @@ export default function BrandPageList() {
                     <th scope="row" className="px-6 py-4">
                       {(filters.page - 1) * filters.limit + index + 1}
                     </th>
-                    <td className="px-6 py-4">
-                      <img
-                        // src={branding?.image}
-                        src={`${replaceSize(
-                          50,
-                          50,
-                          branding?.image
-                            ? branding?.image
-                            : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
-                        )}`}
-                        width={60}
-                        height={60}
-                        alt="Picture of the branding"
-                      />
-                    </td>
                     <td className="px-6 py-4 truncate max-w-xs">
-                      {branding?.name?.name_en}
+                      {branding?.name}
                     </td>
                     <td className="px-6 py-4 truncate max-w-xs">
                       {<StatusBadge status={branding.status} />}

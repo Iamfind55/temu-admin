@@ -14,7 +14,7 @@ import { useToast } from "@/utils/toast";
 import { useCategoryFilters } from "../hook/useCategoryFilters";
 
 // Types and APIs
-import { GET_ALL_CATEGORIES, UPDATE_CATEGORY } from "@/api/category";
+import { GET_ALL_CATEGORIES, GET_CATEGORY, GET_MAIN_CATEGORIES, UPDATE_CATEGORY } from "@/api/category";
 import { CategoryFormData, ICategoryTypes } from "@/types/category";
 import { CLOUDINARY_URL, UPLOAD_PRESET } from "@/constants/adminData";
 import { useRouter } from "next/navigation";
@@ -30,9 +30,15 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
   const [updateCategory, { data: updateCategoryData }] =
     useMutation(UPDATE_CATEGORY);
   const [
-    getAllCategories,
+    getMainCategories,
     { data: categoryDatas, loading: categoryDataLoading },
-  ] = useLazyQuery(GET_ALL_CATEGORIES, {
+  ] = useLazyQuery(GET_MAIN_CATEGORIES, {
+    fetchPolicy: "cache-and-network",
+  });
+  const [
+    getCategory,
+    { data: category },
+  ] = useLazyQuery(GET_CATEGORY, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -40,23 +46,20 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
   const [categories, setCategories] = useState<ICategoryTypes[]>([]);
   const [selectedImage, setSelectedImage] = useState<File | null>();
   const [formData, setFormData] = useState<CategoryFormData>({
-    name: {
-      name_en: "",
-    },
+    name: "",
     image: null,
     parent_id: null,
     recommended: true,
   });
 
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]); // Retain all selected categories
-  const [parentIds, setParentIds] = useState<(string | null)[]>([null]); // Root parent starts as null
+  const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchAllCategories = async () => {
-      await getAllCategories({
+      await getMainCategories({
         variables: {
-          limit: 3000,
+          limit: 200,
           page: 1,
           sortedBy: "created_at_DESC",
         },
@@ -66,19 +69,20 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
   }, []);
 
   useEffect(() => {
-    if (categoryDatas?.getAllCategories?.success) {
-      setCategories([...categories, ...categoryDatas?.getAllCategories?.data]);
+    if (categoryDatas?.getMainCategories?.success) {
+      setCategories(categoryDatas?.getMainCategories?.data);
     }
-  }, [categoryDatas?.getAllCategories?.data]);
+  }, [categoryDatas?.getMainCategories?.data]);
 
   useEffect(() => {
     if (categoryData) {
       setFormData(categoryData?.getCategory?.data);
-      setParentIds([categoryData?.getCategory?.data?.parent_id]);
-      setSelectedCategoryIds([categoryData?.getCategory?.data?.parent_id]);
+      const parentId = categoryData?.getCategory?.data?.parent_data?.parent_data?.id;
+      if (parentId) {
+        setSelectedParentId(parentId);
+      }
     }
   }, [categoryData]);
-
   useEffect(() => {
     const getParams = async () => {
       const { id: categoryId } = await params;
@@ -94,9 +98,7 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
         duration: 3000,
       });
       setFormData({
-        name: {
-          name_en: "",
-        },
+        name: "",
         image: null,
         parent_id: null,
         recommended: true,
@@ -121,7 +123,7 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
     const newErrors: Record<string, string> = {};
 
     // Validate name
-    if (!formData.name.name_en.trim()) {
+    if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
@@ -133,24 +135,20 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
     router.back();
   };
 
-  const handleCategoryChange =
-    (index: number) => (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedParentId(e.target.value);
+  };
 
-      // Update selected categories
-      const updatedSelectedCategoryIds = [...selectedCategoryIds];
-      updatedSelectedCategoryIds[index] = value;
-      setSelectedCategoryIds(updatedSelectedCategoryIds);
+  const fetchCagegory = async (id: string) => {
+    const result = await getCategory({
+      variables: {
+        getCategoryId: id
+      },
+    });
 
-      // Update parent IDs for the next level
-      const updatedParentIds = [...parentIds];
-      updatedParentIds[index + 1] = value || null; // Set parent_id for the next level
-      setParentIds(updatedParentIds);
+    return result?.data.getCategory?.data
+  };
 
-      // Ensure subsequent dropdowns are removed if category changes
-      setParentIds((prev) => prev.slice(0, index + 2));
-      setSelectedCategoryIds((prev) => prev.slice(0, index + 1));
-    };
 
   const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
@@ -180,13 +178,13 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
       return;
     }
     setIsLoading(true);
+    const result = await fetchCagegory(selectedParentId)
+
     const body = {
       id: formData?.id,
       name: formData?.name,
       image: formData?.image,
-      parent_id: selectedCategoryIds?.length
-        ? selectedCategoryIds[selectedCategoryIds?.length - 1]
-        : null,
+      parent_id: result?.id || null,
       recommended: formData?.recommended,
     };
 
@@ -211,14 +209,12 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
       }
     }
 
-    // setFormData({
-    //   name: {
-    //     name_en: "",
-    //   },
-    //   image: null,
-    //   parent_id: null,
-    //   recommended: true,
-    // });
+    setFormData({
+      name: "",
+      image: null,
+      parent_id: null,
+      recommended: true,
+    });
 
     try {
       await updateCategory({
@@ -231,20 +227,6 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
     }
   };
 
-  const handleTranslateChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "name",
-    lang: string
-  ) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: {
-        ...prev[field],
-        [lang]: value,
-      },
-    }));
-  };
 
   return (
     <>
@@ -310,65 +292,48 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
 
           <div className="w-full">
             <div className="mt-2">
-              {Object.keys(formData.name).map((lang) => (
-                <div key={lang}>
-                  <label className="block text-sm text-gray-600">{`Name`}</label>
-                  <input
-                    type="text"
-                    name={`name_${lang}`}
-                    value={formData.name[lang]}
-                    onChange={(e) => handleTranslateChange(e, "name", lang)}
-                    className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                    placeholder="Name..."
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name}</p>
-                  )}
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm text-gray-600">{`Name`}</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
+                  placeholder="Name..."
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
+                )}
+              </div>
             </div>
 
             <div>
               {/* Dynamic Category Combo Boxes */}
               <div className="mt-4">
-                <label className="block text-sm text-gray-600">Category</label>
-                {parentIds.map((parentId, index) => {
-                  if (
-                    !categories?.filter(
-                      (category) => category.parent_id === parentId
-                    ).length ||
-                    (index != 0 && parentId === null)
-                  )
-                    return;
-                  return (
-                    <div key={index} className="mt-2">
-                      <select
-                        value={selectedCategoryIds[index] || ""}
-                        onChange={handleCategoryChange(index)}
-                        className="block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                      >
-                        <option value="">
-                          Select a category {index === 0 ? "" : index + 1}
-                        </option>
-                        {categories
-                          ?.filter(
-                            (category) =>
-                              category.id !==
-                                categoryData?.getCategory?.data?.id ||
-                              !parentIds.includes(category?.id)
-                          )
-                          ?.map((category, index) => (
-                            <option
-                              key={category.id + index}
-                              value={category.id}
-                            >
-                              {category.name.name_en}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  );
-                })}
+                <label className="block text-sm text-gray-600">Parent Category</label>
+                <select
+                  value={selectedParentId}
+                  onChange={handleCategoryChange}
+                  className="mt-2 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
+                >
+                  <option value="">None (Top Level Category)</option>
+                  {categories
+                    ?.filter(
+                      (category) =>
+                        !category.parent_id &&
+                        category.id !== categoryData?.getCategory?.data?.id
+                    )
+                    ?.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                </select>
               </div>
 
               {/* Recommended Checkbox */}
@@ -386,7 +351,7 @@ const UpdateCategoryForm = ({ params }: { params: any }) => {
 
               <IconButton
                 icon={isLoading && <Loading />}
-                className="w-2/5 rounded bg-primary text-white p-2 bg-base text-xs mt-4"
+                className="w-2/5 rounded bg-primary text-white p-2 text-xs mt-4"
                 title="Save change"
                 isFront={true}
                 type="submit"

@@ -28,9 +28,7 @@ const UpdateBrandPage = ({ params }: { params: any }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>();
   const [formData, setFormData] = useState<IBrandingFormData>({
-    name: {
-      name_en: "",
-    },
+    name: "",
     image: null,
   });
 
@@ -56,9 +54,7 @@ const UpdateBrandPage = ({ params }: { params: any }) => {
       });
 
       setFormData({
-        name: {
-          name_en: "",
-        },
+        name: "",
         image: null,
       });
       setIsLoading(false);
@@ -136,20 +132,6 @@ const UpdateBrandPage = ({ params }: { params: any }) => {
     router.back();
   };
 
-  const handleTranslateChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "name",
-    lang: string
-  ) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: {
-        ...prev[field],
-        [lang]: value,
-      },
-    }));
-  };
 
   return (
     <>
@@ -212,24 +194,21 @@ const UpdateBrandPage = ({ params }: { params: any }) => {
 
           <div className="w-full">
             <div className="mt-2">
-              {Object.keys(formData.name).map((lang) => (
-                <div key={lang}>
-                  <label className="block text-sm text-gray-600">{`Name`}</label>
-                  <input
-                    type="text"
-                    name={`name_${lang}`}
-                    value={formData.name[lang]}
-                    onChange={(e) => handleTranslateChange(e, "name", lang)}
-                    className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                    placeholder="Name..."
-                  />
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm text-gray-600">{`Name`}</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
+                  placeholder="Name..."
+                />
+              </div>
             </div>
 
             <IconButton
               icon={isLoading && <Loading />}
-              className="w-2/5 rounded bg-primary text-white p-2 bg-base text-xs mt-4"
+              className="w-2/5 rounded bg-primary text-white p-2 text-xs mt-4"
               title="Save change"
               isFront={true}
               type="submit"

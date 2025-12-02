@@ -3,10 +3,15 @@ import { ICategoryTypes } from "./category";
 
 export interface IProductTypes {
   id: string;
-  name: { [key: string]: string };
-  description: { [key: string]: string };
+  name: string
   cover_image: string;
+  image_url: string;
+  origin_image_url:string;
   price: number;
+  market_price: string;
+  price_str: string;
+  currency: string;
+  show_price: string;
   discount: number;
   quantity: number;
   sell_count: number;
@@ -19,16 +24,27 @@ export interface IProductTypes {
   images: string[];
   created_at: string;
   updated_at: string;
+  total_star: string;
+  total_comment: number;
   categoryData: ICategoryTypes;
   brandData: ICategoryTypes;
+  productTag: ProductTag
 }
 
+export interface ProductTag {
+  id: string;
+  text_rich: any[];
+  local_title: string | null;
+  content: string | null;
+  prompt_tag_text: string | null;
+  footer_text: string | null;
+  header_text: string | null;
+}
 export interface IProductFormData {
   id?: string;
-  name: { [key: string]: string };
-  description: { [key: string]: string };
-  cover_image: File | null; // Updated for file input
-  images: File[]; // Array of files for multiple images
+  name: string;
+  image_url: File | null | string; // Updated for file input
+  images: File[] | string[]; // Array of files for multiple images
   price: number;
   discount: number;
   quantity: number;
@@ -47,17 +63,17 @@ export interface IProductFormData {
 
 // apao
 export interface ProductName {
-  name_en: string;
+  name: string;
 }
 
 export interface ProductDescription {
-  name_en: string | null;
+  name: string | null;
 }
 
 type Category = {
   id: string;
   name: {
-    name_en: string;
+    name: string;
   };
   parent_id: string | null;
   image: string | null;
@@ -66,8 +82,7 @@ type Category = {
 
 export interface ProductData {
   id: string;
-  name: ProductName;
-  description: ProductDescription | null;
+  name: string;
   images?: string[];
   cover_image: string;
   price: number;
@@ -89,14 +104,17 @@ export interface ProductData {
 
 export interface ShopProductData {
   id: string;
-  name: {
-    name_en: string;
-  };
+  name: string;
   cover_image: string;
-  description: {
-    name_en: string;
-  };
+  origin_image_url: string;
   price: number;
+  market_price: string;
+  star_store?: string;
+  total_comment?: number;
+  total_start?: number;
+  sell_count?: string;
+  quantity: string;
+
 }
 
 export interface GetShopProductData {

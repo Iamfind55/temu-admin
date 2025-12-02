@@ -112,6 +112,11 @@ export const ORDER_DETAILS = gql`
           order_no
           created_at
         }
+        product {
+        id
+        name
+        origin_image_url
+      }
         created_by
         created_at
         updated_at

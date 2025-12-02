@@ -1,26 +1,27 @@
 "use client";
 
-import { IProductFormData } from "@/types/product";
-import { useEffect, useState } from "react";
-import { ICategoryTypes } from "@/types/category";
-import { useBrandFilters } from "../../brand/hook/useBrandFilters";
+import { GET_SUB_CATEGORY } from "@/api/category";
 import { GET_PRODUCT, UPDATE_PRODUCT } from "@/api/product";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { CLOUDINARY_URL, UPLOAD_PRESET } from "@/constants/adminData";
+import Breadcrumb from "@/components/breadCrumb";
 import IconButton from "@/components/iconButton";
 import Loading from "@/components/loading";
-import { useTranslations } from "next-intl";
+import SearchableSelect from "@/components/searchableSelect";
+import { CLOUDINARY_URL, UPLOAD_PRESET } from "@/constants/adminData";
+import { ICategoryTypes } from "@/types/category";
+import { IProductFormData } from "@/types/product";
 import { useToast } from "@/utils/toast";
-import CustomTextEditor from "@/components/CustomTextEditor";
-import { GET_ALL_CATEGORIES } from "@/api/category";
-import Breadcrumb from "@/components/breadCrumb";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useBrandFilters } from "../../brand/hook/useBrandFilters";
+import { IBrandingTypes } from "@/types/brand";
 
 const UpdateProductForm = ({ params }: { params: any }) => {
   const router = useRouter();
   const g = useTranslations("globals");
   const { successMessage, errorMessage } = useToast();
-  const { data: brandDatas } = useBrandFilters();
+  const { data: brandDatas, filters, updatePage } = useBrandFilters();
   const [updateProduct, { data: updateProductData }] =
     useMutation(UPDATE_PRODUCT);
 
@@ -28,23 +29,22 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     useLazyQuery(GET_PRODUCT, {
       fetchPolicy: "cache-and-network",
     });
-
   const [
     getAllCategories,
     { data: categoryDatas, loading: categoryDataLoading },
-  ] = useLazyQuery(GET_ALL_CATEGORIES, {
+  ] = useLazyQuery(GET_SUB_CATEGORY, {
     fetchPolicy: "cache-and-network",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<ICategoryTypes[]>([]);
-  const [brandings, setBrandings] = useState<ICategoryTypes[]>([]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]); // Retain all selected categories
-  const [parentIds, setParentIds] = useState<(string | null)[]>([null]); // Root parent starts as null
+  const [brandings, setBrandings] = useState<IBrandingTypes[]>([]);
+  const [categoryPage, setCategoryPage] = useState<number>(1); // Root parent starts as null
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(""); // Selected category
   const [selectedBrandingId, setSelectedBrandingId] = useState<string | null>(
     null
-  ); // Retain all selected categories
+  );
   const [selectedCoverImage, setSelectedCoverImage] = useState<
     File | string | null
   >();
@@ -52,13 +52,8 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     []
   );
   const [formData, setFormData] = useState<IProductFormData>({
-    name: {
-      name_en: "",
-    },
-    description: {
-      name_en: "",
-    },
-    cover_image: null,
+    name: "",
+    image_url: null,
     images: [],
     price: 0,
     discount: 0,
@@ -76,12 +71,11 @@ const UpdateProductForm = ({ params }: { params: any }) => {
   useEffect(() => {
     if (productData?.getProduct?.success) {
       setFormData(productData?.getProduct?.data);
-      setSelectedCoverImage(productData?.getProduct?.data?.cover_image);
+      setSelectedCoverImage(productData?.getProduct?.data?.image_url);
       setSelectedMultipleImages(productData?.getProduct?.data?.images);
       setSelectedBrandingId(productData?.getProduct?.data?.brand_id);
-      const categoryIds = productData?.getProduct?.data?.category_ids || [];
-      setSelectedCategoryIds(categoryIds.slice().reverse());
-      setParentIds([null, ...categoryIds.slice().reverse()]);
+      const categoryId = productData?.getProduct?.data?.categoryData?.id || "";
+      setSelectedCategoryId(categoryId);
     }
   }, [productData?.getProduct]);
 
@@ -103,7 +97,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     const fetchAllCategories = async () => {
       await getAllCategories({
         variables: {
-          limit: 3000,
+          limit: 50,
           page: 1,
           sortedBy: "created_at_DESC",
         },
@@ -113,24 +107,45 @@ const UpdateProductForm = ({ params }: { params: any }) => {
   }, []);
 
   useEffect(() => {
-    if (categoryDatas?.getAllCategories?.success) {
-      setCategories([...categories, ...categoryDatas?.getAllCategories?.data]);
-    }
-  }, [categoryDatas?.getAllCategories?.data]);
+    const newData = categoryDatas?.getSubcategories?.data
+    if (!newData) return;
+    setCategories((prev) => {
+      const merged = [...prev, ...newData];
+
+      const unique: ICategoryTypes[] = Array.from(
+        new Map(
+          merged.map((item: ICategoryTypes) => [item.id, item])
+        ).values()
+      );
+
+      return unique;
+    });
+  }, [categoryDatas?.getSubcategories?.data]);
 
   useEffect(() => {
-    if (brandDatas?.getBrandings?.data) {
-      setBrandings([...brandings, ...brandDatas?.getBrandings?.data]);
-    }
+    const newData = brandDatas?.getBrandings?.data;
+    if (!newData) return;
+
+    setBrandings((prev) => {
+      const merged = [...prev, ...newData];
+
+      const unique: IBrandingTypes[] = Array.from(
+        new Map(
+          merged.map((item: IBrandingTypes) => [item.id, item])
+        ).values()
+      );
+
+      return unique;
+    });
   }, [brandDatas?.getBrandings?.data]);
+
 
   useEffect(() => {
     if (updateProductData?.updateProduct?.success) {
       // Reset the form state
       setFormData({
-        name: { name_en: "" },
-        description: { name_en: "" },
-        cover_image: null,
+        name: "",
+        image_url: null,
         images: [],
         price: 0,
         discount: 0,
@@ -162,11 +177,18 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     }
   }, [updateProductData]);
 
+  const categoryBranding = async () => {
+    setCategoryPage(categoryPage + 1)
+  };
+  const nextBranding = async () => {
+    updatePage(filters.page + 1)
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     // Validate name
-    if (!formData.name.name_en.trim()) {
+    if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
@@ -181,8 +203,8 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     }
 
     // Validate cover image
-    if (!selectedCoverImage && !formData?.cover_image) {
-      newErrors.cover_image = "Cover image is required";
+    if (!selectedCoverImage && !formData?.image_url) {
+      newErrors.image_url = "Cover image is required";
     }
 
     setErrors(newErrors);
@@ -198,27 +220,27 @@ const UpdateProductForm = ({ params }: { params: any }) => {
         type === "checkbox"
           ? checked
           : [
-              "price",
-              "discount",
-              "quantity",
-              "total_star",
-              "product_vip",
-              "sell_count",
-              "product_top",
-            ].includes(name)
-          ? Number(value)
-          : value,
+            "price",
+            "discount",
+            "quantity",
+            "total_star",
+            "product_vip",
+            "sell_count",
+            "product_top",
+          ].includes(name)
+            ? Number(value)
+            : value,
     }));
   };
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "cover_image" | "images"
+    field: "image_url" | "images"
   ) => {
     const files = e.target.files;
     if (!files) return;
 
-    if (field === "cover_image") {
+    if (field === "image_url") {
       setSelectedCoverImage(files[0]);
     } else if (field === "images") {
       setSelectedMultipleImages([
@@ -242,7 +264,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
     // Prepare the body object
     const body: IProductFormData = {
       ...formData,
-      category_id: selectedCategoryIds[selectedCategoryIds?.length - 1],
+      category_id: selectedCategoryId,
       brand_id: selectedBrandingId,
     };
 
@@ -260,7 +282,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
         const data = await response.json();
 
         if (data.secure_url) {
-          body.cover_image = data.secure_url;
+          body.image_url = data.secure_url;
         }
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -312,8 +334,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
             id: body?.id,
             brand_id: body?.brand_id,
             category_id: body?.category_id,
-            cover_image: body?.cover_image,
-            description: body?.description,
+            image_url: body?.image_url,
             discount: body?.discount,
             images: body?.images,
             name: body?.name,
@@ -337,72 +358,33 @@ const UpdateProductForm = ({ params }: { params: any }) => {
       setIsLoading(false); // Ensure loading state is cleared
     }
   };
-
-  const handleTranslateChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "name" | "description",
-    lang: string
-  ) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: {
-        ...prev[field],
-        [lang]: value,
-      },
-    }));
-  };
-
   const handleRemoveCoverImage = (e: any) => {
     e.preventDefault();
-    setSelectedCoverImage(formData?.cover_image);
+    setSelectedCoverImage(formData?.image_url);
   };
 
-  const handleCategoryChange =
-    (index: number) => (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-
-      // Update selected categories
-      const updatedSelectedCategoryIds = [...selectedCategoryIds];
-      updatedSelectedCategoryIds[index] = value;
-      setSelectedCategoryIds(updatedSelectedCategoryIds);
-
-      // Update parent IDs for the next level
-      const updatedParentIds = [...parentIds];
-      updatedParentIds[index + 1] = value || null; // Set parent_id for the next level
-      setParentIds(updatedParentIds);
-
-      // Ensure subsequent dropdowns are removed if category changes
-      setParentIds((prev) => prev.slice(0, index + 2));
-      setSelectedCategoryIds((prev) => prev.slice(0, index + 1));
-
-      // Trigger fetch for subcategories
-      // updateKeyword(""); // Reset keyword search
-      // if (value !== "") filters.parentId = value || ""; // Update parentId for filters
-    };
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategoryId(value);
+  };
 
   const handleBrandingChange = (brandingId: string) => {
     setSelectedBrandingId(brandingId);
-  };
-
-  const handleEditorChange = (
-    name: string,
-    nestedKey: string,
-    value: string
-  ) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        [nestedKey]: value,
-      },
-    }));
   };
 
   const goBack = () => {
     router.back();
   };
 
+  // Format categories for SearchableSelect
+  const categoryOptions = categories?.map((category) => ({
+    label: category.name,
+    value: category.id,
+  })) || [];
+
+  const brandOptions = brandings?.map((brand) => ({
+    label: brand.name,
+    value: brand.id,
+  })) || [];
   return (
     <>
       <Breadcrumb
@@ -450,23 +432,23 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                 )}
                 <input
                   type="file"
-                  name="cover_image"
+                  name="image_url"
                   accept="image/*"
-                  onChange={(e) => handleFileChange(e, "cover_image")}
+                  onChange={(e) => handleFileChange(e, "image_url")}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
               </div>
-              {errors.cover_image && (
-                <p className="text-red-500 text-sm">{errors.cover_image}</p>
+              {errors.image_url && (
+                <p className="text-red-500 text-sm">{errors.image_url}</p>
               )}
             </div>
 
             {/* Multiple Images */}
             <div className="mt-4 space-y-2 w-40">
               <label className="block text-sm text-gray-600">Images</label>
-              {selectedMultipleImages.length > 0 && (
+              {selectedMultipleImages?.length > 0 && (
                 <div className="mt-2 grid grid-cols-2 gap-4">
-                  {selectedMultipleImages.map((image, index) => (
+                  {selectedMultipleImages?.map((image, index) => (
                     <div key={"multiple-images" + index} className="relative">
                       <img
                         src={
@@ -509,71 +491,58 @@ const UpdateProductForm = ({ params }: { params: any }) => {
 
           <div className="w-5/6">
             <div>
-              {Object.keys(formData.name).map((lang, index) => (
-                <div key={lang + index}>
-                  <label className="block text-sm text-gray-600">{`Name`}</label>
-                  <input
-                    type="text"
-                    name={`name_${lang}`}
-                    value={formData.name[lang]}
-                    placeholder="Name..."
-                    onChange={(e) => handleTranslateChange(e, "name", lang)}
-                    className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
-                    required
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name}</p>
-                  )}
-                </div>
-              ))}
+              <label className="block text-sm text-gray-600">{`Name`}</label>
+              <textarea
+                name="name"
+                value={formData.name}
+                placeholder="Name..."
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
+                }
+                rows={4}
+                className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600 resize-vertical"
+                required
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
 
             {/* Other Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="mt-4">
-                  <label className="block text-sm text-gray-600">
-                    Category
-                  </label>
-                  {parentIds.map((parentId, index) => {
-                    if (
-                      !categories?.filter(
-                        (category) => category.parent_id === parentId
-                      ).length ||
-                      (index != 0 && parentId === null)
-                    )
-                      return;
-                    return (
-                      <div key={"category-parent" + index} className="mt-2">
-                        <select
-                          value={selectedCategoryIds[index] || ""}
-                          onChange={handleCategoryChange(index)}
-                          className="block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                        >
-                          <option value="">
-                            Select a category {index === 0 ? "" : index + 1}
-                          </option>
-                          {categories
-                            ?.filter(
-                              (category) => category.parent_id === parentId
-                            )
-                            ?.map((category, index) => (
-                              <option
-                                key={category.id + index}
-                                value={category.id}
-                              >
-                                {category.name.name_en}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    );
-                  })}
+                  <SearchableSelect
+                    label="Category"
+                    options={categoryOptions}
+                    value={selectedCategoryId}
+                    onChange={handleCategoryChange}
+                    onScrollEnd={(end) => {
+                      if (end) {
+                        categoryBranding()
+                      }
+                    }}
+                    placeholder="Select a category"
+                  />
                 </div>
               </div>
-              <div>
-                {/* Dynamic branding Combo Boxes */}
-                <div className="mt-4">
+              <div className="mt-4">
+                <SearchableSelect
+                  label="Brand"
+                  options={brandOptions}
+                  value={selectedBrandingId || ""}
+                  onChange={handleBrandingChange}
+                  onScrollEnd={(end) => {
+                    if (end) {
+                      nextBranding()
+                    }
+                  }}
+                  placeholder="Select a brand"
+                />
+                {/* <div className="mt-4">
                   <label className="block text-sm text-gray-600">Brand</label>
 
                   <div className="mt-2">
@@ -587,12 +556,12 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                       <option value="">Select a brand</option>
                       {brandings?.map((branding, index) => (
                         <option key={branding.id + index} value={branding.id}>
-                          {branding.name.name_en}
+                          {branding.name}
                         </option>
                       ))}
                     </select>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div>
@@ -712,26 +681,12 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                 />
                 <span className="text-sm text-gray-600">Recommended</span>
               </label>
-
-              <div className="mt-4">
-                <label className="block text-sm text-gray-600">
-                  Description
-                </label>
-                <div className="max-h-[300px] min-[200px] rounded-md">
-                  <CustomTextEditor
-                    name="description"
-                    nestedKey="name_en" // Nested key
-                    initialValue={formData.description.name_en}
-                    onContentChange={handleEditorChange} // Handle content changes
-                  />
-                </div>
-              </div>
             </div>
 
             <div className="mt-4">
               <IconButton
                 icon={isLoading && <Loading />}
-                className="w-auto rounded bg-primary text-white p-2 bg-base text-sm"
+                className="w-auto rounded bg-primary text-white p-2 text-sm"
                 title="Save change"
                 isFront={true}
                 type="submit"

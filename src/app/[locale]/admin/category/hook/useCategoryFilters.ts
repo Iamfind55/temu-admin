@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { PaginationState } from "@/types/pagination";
-import { GET_CATEGORIES, GET_CATEGORY } from "@/api/category";
+import { GET_CATEGORIES, GET_CATEGORY, GET_SUB_CATEGORY } from "@/api/category";
 
 interface CategoryFilter extends PaginationState {
   keyword?: string;
@@ -23,7 +23,7 @@ export const useCategoryFilters = () => {
 
   const [debouncedKeyword, setDebouncedKeyword] = useState(filters.keyword);
   const [getCategories, { data, loading, error }] = useLazyQuery(
-    GET_CATEGORIES,
+    GET_SUB_CATEGORY,
     {
       fetchPolicy: "cache-and-network",
     }
