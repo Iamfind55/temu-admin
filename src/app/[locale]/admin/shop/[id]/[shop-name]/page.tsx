@@ -222,7 +222,7 @@ const ShopPage = () => {
     })
   ) || [];
 
-  console.log(fetchShopProducts.data);
+  console.log(customerData?.getCustomers?.data);
 
   return (
     <>

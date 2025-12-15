@@ -82,3 +82,16 @@ query GetLogistic($getLogisticId: ID!) {
     }
   }
 }`
+
+export const DELETE_LOGISTICS = gql`
+mutation DeletLogictics($deletLogicticsId: ID!) {
+  deletLogictics(id: $deletLogicticsId) {
+    success
+    data {
+      id
+    }
+    error {
+      message
+    }
+  }
+}`

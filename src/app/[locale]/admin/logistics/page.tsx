@@ -13,7 +13,7 @@ import Pagination from "@/components/pagination";
 
 // Icons and utils
 import { DELETE_BRANDING } from "@/api/brand";
-import { CREATE_LOGISTICS, UPLOAD_LOGISTICS } from "@/api/logistics";
+import { CREATE_LOGISTICS, DELETE_LOGISTICS, UPLOAD_LOGISTICS } from "@/api/logistics";
 import Breadcrumb from "@/components/breadCrumb";
 import Chip from "@/components/chip";
 import MyModal from "@/components/modal";
@@ -37,7 +37,7 @@ export default function Logistics() {
   const g = useTranslations("globals");
   const router = useRouter();
   const { successMessage, errorMessage } = useToast();
-  const [deleteBranding] = useMutation(DELETE_BRANDING);
+  const [deleteLogistics] = useMutation(DELETE_LOGISTICS);
 
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -86,14 +86,14 @@ export default function Logistics() {
     try {
       setIsLoading(true);
 
-      await deleteBranding({
+      await deleteLogistics({
         variables: {
-          deleteBrandingId: selectedBranding?.id,
+          deletLogicticsId: selectedBranding?.id,
         },
       });
 
       successMessage({
-        message: "Delete branding successful!.",
+        message: "Delete successful!.",
         duration: 3000,
       });
       setIsOpen(false);

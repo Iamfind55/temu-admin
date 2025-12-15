@@ -278,7 +278,7 @@ export default function Transactions() {
                     {index + 1}
                   </th>
                   <td className="px-6 py-4">
-                    <Image
+                    {/* <Image
                       className="shadow-md rounded cursor-pointer"
                       src={
                         shop?.payment_slip
@@ -289,7 +289,7 @@ export default function Transactions() {
                       width={50}
                       height={50}
                       onClick={() => handleOpenImageModal()}
-                    />
+                    /> */}
                   </td>
                   <td className="px-6 py-4 truncate max-w-xs flex items-center justify-center gap-1">
                     {shop?.shop?.store_name ? <ShopIcon /> : <CustomerIcon />}

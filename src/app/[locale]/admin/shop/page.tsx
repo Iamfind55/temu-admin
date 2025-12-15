@@ -420,7 +420,7 @@ export default function ShopPageList() {
                           ""
                         )}
 
-                        {[EShopStatus.PENDING].includes(shop.status) && (
+                        {[EShopStatus.PENDING,EShopStatus.ACTIVE].includes(shop.status) && (
                           <CheckCircleIcon
                             onClick={() => {
                               setSelectedShop(shop);
