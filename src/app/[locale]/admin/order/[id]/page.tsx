@@ -94,7 +94,6 @@ const OrderDetailsPage = ({ params }: { params: any }) => {
   if (orderDetailDatasLoading) return <Loading />;
 
   const orderDetails = orderDetailsData?.adminGetOrderDetails?.data;
-  console.log(orderDetails);
 
   return (
     <div className="container mx-auto p-4 text-gray-500">
@@ -192,7 +191,7 @@ const OrderDetailsPage = ({ params }: { params: any }) => {
                   +{(order.price * order.quantity * order.profit) / 100}
                 </span>
               </div>
-              <div className="mt-8 border-t-2">
+              {/* <div className="mt-8 border-t-2">
                 <h3 className="text-md mt-5 font-semibold mb-2 text-black">Logistics Info</h3>
                 <div className="flex items-center space-x-4">
                   <p><strong>Company:</strong> {order.logistics?.company_name}</p>
@@ -203,7 +202,7 @@ const OrderDetailsPage = ({ params }: { params: any }) => {
               </div>
               <div className="flex items-center space-x-4">
                 <p><strong>Shipping:</strong> {order.logistics?.cost}</p>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

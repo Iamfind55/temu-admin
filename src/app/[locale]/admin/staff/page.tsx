@@ -276,10 +276,9 @@ export default function Customer() {
         setFile(null);
         result?.data || {};
         handleOpenManageModal();
-        fetchEmployees.refetch();
       } else {
         errorMessage({
-          message: result?.error?.details || "An error occurred",
+          message: result?.error?.message || "An error occurred",
           duration: 3000,
         });
       }
@@ -289,6 +288,7 @@ export default function Customer() {
         duration: 3000,
       });
     } finally {
+      fetchEmployees.refetch();
       setFile(null);
       setIsLoading(false);
     }
@@ -435,14 +435,14 @@ export default function Customer() {
                           className="shadow-md rounded"
                           src={
                             employee.image &&
-                            typeof employee.image === "string" &&
-                            employee.image.startsWith("http")
+                              typeof employee.image === "string" &&
+                              employee.image.startsWith("http")
                               ? employee.image
                               : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
                           }
                           alt="default"
-                          width={30}
-                          height={30}
+                          width={80}
+                          height={80}
                         />
                         <p>{employee.firstName + " " + employee.lastName}</p>
                       </td>
@@ -717,9 +717,8 @@ export default function Customer() {
                 isFront={true}
                 title="Save change"
                 icon={isLoading ? <Loading /> : ""}
-                className={`rounded ${
-                  isUpdate ? "bg-neon_pink" : "bg-green-500"
-                } text-white w-auto text-sm hover:font-medium hover:shadow-md`}
+                className={`rounded ${isUpdate ? "bg-neon_pink" : "bg-green-500"
+                  } text-white w-auto text-sm hover:font-medium hover:shadow-md`}
               />
             </div>
           </form>

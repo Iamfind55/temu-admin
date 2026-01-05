@@ -1,21 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import Cookies from "js-cookie";
-import React, { ReactNode } from "react";
 import { logout } from "@/redux/slice/authSlice";
-import { useDispatch, useSelector } from "react-redux";
+import Cookies from "js-cookie";
+import Image from "next/image";
 import {
   usePathname,
-  useRouter,
-  usePathname as useNextPathName,
+  useRouter
 } from "next/navigation";
+import React, { ReactNode, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 // components
 import {
   AppleIcon,
   ArrowDownIcon,
-  ArrowNextIcon,
   BannerIcon,
   BrandingIcon,
   CartIcon,
@@ -25,22 +23,22 @@ import {
   DepositIcon,
   EmployeeIcon,
   LogoutIcon,
-  MenuIcon,
   NextIcon,
   OutlineHomeIcon,
-  ShopIcon,
+  ShopIcon
 } from "@/icons/page";
 import "../globals.css";
 
 import { RootState } from "@/redux/store";
 
-import { showNotification } from "@/redux/slice/notificationSlice";
-import { QUERY_COUNT_NEW_TRANSACTION, QUERY_COUNT_NO_PICK_UP_ORDER, QUERY_COUNT_VIP_REQUEST, SUBSCRIPTION_ORDER, SUBSCRIPTION_UPDATE_ORDER, TRANSACTION_SUBSCRIPTION, VIP_REQUEST_SUBSCRIPTION } from "@/api/subscription";
-import { addOrderAmount, addTransactionAmount, addVipAmount, clearAllAmounts } from "@/redux/slice/amountSlice";
-import { useLazyQuery, useSubscription } from "@apollo/client";
-import { useToast } from "@/utils/toast";
+import { NEW_MESSAGE, QUERY_COUNT_NEW_TRANSACTION, QUERY_COUNT_NO_PICK_UP_ORDER, QUERY_COUNT_VIP_REQUEST, SUBSCRIBE_SENDMESSAGE, SUBSCRIPTION_ORDER, SUBSCRIPTION_UPDATE_ORDER, TRANSACTION_SUBSCRIPTION, VIP_REQUEST_SUBSCRIPTION } from "@/api/subscription";
 import { Link } from "@/i18n/navigation";
-import { MdLocalShipping } from "react-icons/md";
+import { addOrderAmount, addTransactionAmount, addVipAmount } from "@/redux/slice/amountSlice";
+import { showNotification } from "@/redux/slice/notificationSlice";
+import { useToast } from "@/utils/toast";
+import { useLazyQuery, useSubscription } from "@apollo/client";
+import { FaRocketchat } from "react-icons/fa";
+import { GET_UNREDMESSAGE } from "@/api/message";
 
 
 type MenuItem = {
@@ -133,10 +131,15 @@ export default function RootLayout({
       route: "/admin/staff",
     },
     {
-      icon: <MdLocalShipping size={16} />,
-      menu: "Logistics",
-      route: "/admin/logistics",
+      icon: <FaRocketchat size={16} />,
+      menu: "Message Center",
+      route: "/admin/message",
     },
+    // {
+    //   icon: <MdLocalShipping size={16} />,
+    //   menu: "Logistics",
+    //   route: "/admin/logistics",
+    // },
   ];
 
   const handleLogout = async () => {
@@ -145,11 +148,15 @@ export default function RootLayout({
     router.push("/signin");
   };
 
+  const [unreadMessageCount, setUndreadMessageCount] = useState(0)
   const { data: transactionData, error: transactionError } = useSubscription(TRANSACTION_SUBSCRIPTION);
   const { data: vipData, error: vipError } = useSubscription(VIP_REQUEST_SUBSCRIPTION);
   const { data: orderData, error: orderError } = useSubscription(SUBSCRIPTION_ORDER);
   const { data: updateOrderData, error: updateOrderError } = useSubscription(SUBSCRIPTION_UPDATE_ORDER);
-
+  const { data: newMessage, error: newMessageError } = useSubscription(NEW_MESSAGE);
+  const [unreadMessage] = useLazyQuery(GET_UNREDMESSAGE, {
+    fetchPolicy: "cache-and-network",
+  });
   const [queryCountTrans] = useLazyQuery(QUERY_COUNT_NEW_TRANSACTION, {
     fetchPolicy: "cache-and-network",
   });
@@ -161,6 +168,50 @@ export default function RootLayout({
   const [queryCountNopickUpOrder] = useLazyQuery(QUERY_COUNT_NO_PICK_UP_ORDER, {
     fetchPolicy: "cache-and-network",
   });
+
+
+  const playSound = () => {
+    if (typeof window !== "undefined") {
+      // const audio = new Audio("https://res.cloudinary.com/dvh8zf1nm/video/upload/v1743312798/notification_u9xtjc.mp3");
+      const audio = new Audio("https://res.cloudinary.com/dwzjfryoh/video/upload/v1767540851/messeger_v6i5vf.mp3");
+      audio.load();
+      audio.play().catch((error) => console.error("Audio playback failed:", error));
+    }
+  };
+
+  React.useEffect(() => {
+    if (pathname === "/la/admin/message" || pathname === "/en/admin/message") {
+      setUndreadMessageCount(0)
+    }
+  }, [pathname]);
+
+  React.useEffect(() => {
+    if (!newMessage) return;
+
+    fetchNewMessage();
+    // Play sound
+    const audio = new Audio("/sound/messenger.mp3");
+    audio.play().catch(err => {
+      console.warn("Audio play blocked:", err);
+    });
+    playSound()
+  }, [newMessage]);
+
+  const fetchNewMessage = async () => {
+    try {
+      const result = await unreadMessage();
+      const total = result?.data?.getUnreadMessage?.total || 0;
+
+      if (total > 0) {
+        setUndreadMessageCount(total)
+      }
+    } catch (error) {
+      console.error("Error fetching transaction data:", error);
+    }
+  };
+  React.useEffect(() => {
+    fetchNewMessage();
+  }, []);
 
   // count transaction amount
   React.useEffect(() => {
@@ -337,6 +388,10 @@ export default function RootLayout({
                           ) : item.menu === "Shop Management" ? (
                             <span className="ml-6 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                               {vipAmount}
+                            </span>
+                          ) : item.menu === "Message Center" && unreadMessageCount !== 0 ? (
+                            <span className="ml-6 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {unreadMessageCount}
                             </span>
                           ) : (
                             ""

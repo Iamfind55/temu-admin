@@ -339,13 +339,13 @@ const UpdateProductForm = ({ params }: { params: any }) => {
             images: body?.images,
             name: body?.name,
             price: body?.price,
-            product_top: body?.product_top,
+            // product_top: body?.product_top,
             product_vip: body?.product_vip,
             quantity: body?.quantity,
             recommended: body?.recommended,
             sell_count: body?.sell_count,
-            sku: body?.sku,
-            spu: body?.spu,
+            // sku: body?.sku,
+            // spu: body?.spu,
             status: body?.status,
             total_comment: body?.total_comment,
             total_star: body?.total_star,
@@ -564,7 +564,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                 </div> */}
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm text-gray-600">Sku</label>
                 <input
                   type="text"
@@ -574,8 +574,8 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                 />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <label className="block text-sm text-gray-600">Spu</label>
                 <input
                   type="text"
@@ -585,7 +585,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-sm text-gray-600">Price</label>
                 <input
@@ -652,12 +652,10 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                     <option value={1}>VIP 1</option>
                     <option value={2}>VIP 2</option>
                     <option value={3}>VIP 3</option>
-                    <option value={4}>VIP 4</option>
-                    <option value={5}>VIP 5</option>
                   </select>
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm text-gray-600">
                   Product top
                 </label>
@@ -668,7 +666,7 @@ const UpdateProductForm = ({ params }: { params: any }) => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="mt-4">

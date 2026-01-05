@@ -433,13 +433,22 @@ const AddProductForm = () => {
                 <label className="block text-sm text-gray-600">
                   Name
                 </label>
-                <input
+                {/* <input
                   type="text"
                   name="name"
                   value={formData.name}
                   placeholder="Name..."
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
+                  required
+                /> */}
+                <textarea
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Name..."
+                  rows={4}
+                  className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600 resize-vertical"
                   required
                 />
                 {errors.name && (
@@ -475,7 +484,7 @@ const AddProductForm = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm text-gray-600">Sku</label>
                 <input
                   type="text"
@@ -496,7 +505,7 @@ const AddProductForm = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-sm text-gray-600">Price</label>
                 <input
@@ -531,6 +540,7 @@ const AddProductForm = () => {
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                   required
                 />
+                
                 {errors.quantity && (
                   <p className="text-red-500 text-sm">{errors.quantity}</p>
                 )}
@@ -562,12 +572,10 @@ const AddProductForm = () => {
                     <option value={1}>VIP 1</option>
                     <option value={2}>VIP 2</option>
                     <option value={3}>VIP 3</option>
-                    <option value={4}>VIP 4</option>
-                    <option value={5}>VIP 5</option>
                   </select>
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm text-gray-600">
                   Product top
                 </label>
@@ -578,7 +586,7 @@ const AddProductForm = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-600"
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Recommended */}
