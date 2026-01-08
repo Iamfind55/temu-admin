@@ -27,9 +27,7 @@ const AddBrandPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<IBrandingFormData>({
-    name: {
-      name: "",
-    },
+    name: "",
     image: null,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>();
@@ -37,9 +35,7 @@ const AddBrandPage = () => {
   useEffect(() => {
     if (createBrandingData?.createBranding?.success) {
       setFormData({
-        name: {
-          name: "",
-        },
+        name: "",
         image: null,
       });
       setSelectedImage(null);
@@ -80,7 +76,7 @@ const AddBrandPage = () => {
     const newErrors: Record<string, string> = {};
 
     // Validate name
-    if (!formData.name.name.trim()) {
+    if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
@@ -119,13 +115,6 @@ const AddBrandPage = () => {
       }
     }
 
-    // setFormData({
-    //   name: {
-    //     name: "",
-    //   },
-    //   image: null,
-    // });
-
     try {
       await createBrading({
         variables: {
@@ -139,18 +128,11 @@ const AddBrandPage = () => {
     }
   };
 
-  const handleTranslateChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "name",
-    lang: string
-  ) => {
-    const { value } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [field]: {
-        ...prev[field],
-        [lang]: value,
-      },
+      [name]: value,
     }));
   };
 
@@ -205,22 +187,20 @@ const AddBrandPage = () => {
 
           <div className="w-full">
             <div className="mt-2">
-              {Object.keys(formData.name).map((lang) => (
-                <div key={lang}>
-                  <label className="block text-sm text-gray-600">{`Name`}</label>
-                  <input
-                    type="text"
-                    name={`name_${lang}`}
-                    value={formData.name[lang]}
-                    onChange={(e) => handleTranslateChange(e, "name", lang)}
-                    className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
-                    placeholder="Name..."
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm">{errors.name}</p>
-                  )}
-                </div>
-              ))}
+              <div>
+                <label className="block text-sm text-gray-600">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-4 py-2 text-sm border rounded-md text-gray-500"
+                  placeholder="Name..."
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
+                )}
+              </div>
             </div>
 
             <IconButton

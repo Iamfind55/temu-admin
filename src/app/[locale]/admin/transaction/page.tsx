@@ -297,9 +297,9 @@ export default function Transactions() {
                       shop?.shop?.store_name
                     ) : (
                       <span>
-                        {shop?.customer?.firstName ?? "" +
+                        {(shop?.customer?.firstName ?? "") +
                           " " +
-                          shop?.customer?.lastName ?? ""}
+                          (shop?.customer?.lastName ?? "")}
                       </span>
                     )}
                   </td>

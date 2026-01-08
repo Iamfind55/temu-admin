@@ -537,7 +537,7 @@ export default function Customer() {
                           height={30}
                         />
 
-                        <p>{customer.firstName ?? "" + " " + customer.lastName ?? ""}</p>
+                        <p>{(customer.firstName ?? "") + " " + (customer.lastName ?? "")}</p>
                       </td>
                       <td
                         className={`py-3 pl-1 ${customer.customer_type === "FAKE"

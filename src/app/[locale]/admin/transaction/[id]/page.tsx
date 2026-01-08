@@ -24,7 +24,7 @@ export default function TransactionDetails() {
         items={[
           { label: "Admin dashboard", value: "/admin" },
           { label: "Transaction", value: "/admin/transaction" },
-          { label: "Transaction details", value: `/transaction/${params.id}` },
+          { label: "Transaction details", value: `/transaction/${params?.id}` },
         ]}
       />
       <div className="flex items-start justify-start gap-2 flex-col bg-white rounded-md p-4 mt-4 text-sm text-gray-500">
