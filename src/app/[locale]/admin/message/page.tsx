@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useToast } from "@/utils/toast";
 import { CLOUDINARY_URL, UPLOAD_PRESET } from "@/constants/adminData";
 import { useSelector } from "react-redux";
-import Loading from "@/components/loading";
 import { useFetchConversations } from "./hook/useFetchConversation";
 import { useFetchMessages } from "./hook/useFetchMessages";
 import { IConversation, IMessage } from "@/types/message";
@@ -66,6 +65,7 @@ export default function Message() {
       if (prevMessages.some(m => m.id === newMessage.id)) {
         return prevMessages;
       }
+      // Append new message at the end (newest messages at bottom)
       return [...prevMessages, newMessage];
     });
 
@@ -192,11 +192,17 @@ export default function Message() {
           }));
 
           setAllMessages((prev) => {
-            const merged = [...result.messages, ...prev];
+            const merged: IMessage[] = currentPage === 1
+              ? result.messages
+              : [...result.messages, ...prev];
+
             const uniqueMessages = Array.from(
-              new Map(merged.map((m) => [m.id, m])).values()
+              new Map(merged.map((m: IMessage) => [m.id, m])).values()
+            ) as IMessage[];
+
+            return uniqueMessages.sort((a: IMessage, b: IMessage) =>
+              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
             );
-            return uniqueMessages;
           });
 
           if (mappedMessages.length > 0) {
@@ -240,7 +246,6 @@ export default function Message() {
 
     // Load more messages when scrolled to top
     if (target.scrollTop < 10 && !isLoadingMore) {
-      console.log("allMessages.length", allMessages.length);
       if (allMessages.length < messageTotal) {
         setCurrentPage((prev) => prev + 1);
       }
@@ -408,6 +413,7 @@ export default function Message() {
             if (prevMessages.some(msg => msg.id === newMessage.id)) {
               return prevMessages;
             }
+            // Append new message at the end (newest messages at bottom)
             return [...prevMessages, newMessage];
           });
 
@@ -450,7 +456,7 @@ export default function Message() {
             if (prevMessages.some(msg => msg.id === newMessage.id)) {
               return prevMessages;
             }
-
+            // Append new message at the end (newest messages at bottom)
             return [...prevMessages, newMessage];
           });
 
@@ -535,30 +541,7 @@ export default function Message() {
           </p> */}
         </div>
 
-        {/* Search Bar */}
-        <div className="px-4 py-3 border-b">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search conversations..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <svg
-              className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-        </div>
-
+  
         {/* Conversations List */}
         <div
           ref={conversationsContainerRef}
@@ -566,8 +549,26 @@ export default function Message() {
           className="flex-1 overflow-y-auto"
         >
           {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <Loading />
+            // Skeleton loading UI
+            <div className="space-y-0">
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="px-4 py-3 border-b animate-pulse">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar skeleton */}
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
+
+                    {/* Content skeleton */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        <div className="h-3 bg-gray-200 rounded w-16"></div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                      <div className="h-5 bg-gray-200 rounded w-12"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : conversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full px-4 text-center">
@@ -590,7 +591,7 @@ export default function Message() {
               </p>
             </div>
           ) : (
-            conversations.map((conversation,index) => (
+            conversations.map((conversation, index) => (
               <div
                 key={conversation.id}
                 onClick={() => {
@@ -613,7 +614,7 @@ export default function Message() {
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                    {conversation.title.charAt(0).toUpperCase()}
+                    {conversation?.title?.charAt(0)?.toUpperCase()}
                   </div>
 
                   {/* Conversation Info */}
@@ -622,7 +623,7 @@ export default function Message() {
                       <h3 className="font-semibold text-sm text-gray-900 truncate">
                         {conversation.creator?.fullname || conversation.creator?.store_name || conversation.creator?.email}
                       </h3>
-                      <span className="text-xs text-gray-500 flex-shrink-0"> Message {index+1}
+                      <span className="text-xs text-gray-500 flex-shrink-0"> Message {index + 1}
                         {conversation.last_message_at ? formatLastMessageTime(conversation?.last_message_at) : ""}
                       </span>
                     </div>
@@ -655,30 +656,25 @@ export default function Message() {
 
           {/* Loading indicator at bottom for conversation pagination */}
           {isLoadingMoreConversations && (
-            <div className="flex justify-center py-4 px-4">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <svg
-                  className="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Loading more...
-              </div>
+            <div className="space-y-0">
+              {[...Array(3)].map((_, index) => (
+                <div key={`loading-${index}`} className="px-4 py-3 border-b animate-pulse">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar skeleton */}
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
+
+                    {/* Content skeleton */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        <div className="h-3 bg-gray-200 rounded w-16"></div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                      <div className="h-5 bg-gray-200 rounded w-12"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

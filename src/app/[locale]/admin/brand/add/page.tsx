@@ -30,7 +30,7 @@ const AddBrandPage = () => {
     name: "",
     image: null,
   });
-  const [selectedImage, setSelectedImage] = useState<File | null>();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (createBrandingData?.createBranding?.success) {

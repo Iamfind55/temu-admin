@@ -39,8 +39,6 @@ export const vip_level: any = [
   { label: "VIP 1", value: 1 },
   { label: "VIP 2", value: 2 },
   { label: "VIP 3", value: 3 },
-  { label: "VIP 4", value: 4 },
-  { label: "VIP 5", value: 5 },
 ];
 
 export const times: any = [

@@ -22,12 +22,14 @@ export function useFetchMessages() {
       where: { conversation_id: string };
       limit?: number;
       page?: number;
+      sortedBy?: string
     }) => {
       try {
         const variables = cleanVariables({
           where: options.where,
           limit: options.limit ?? 10,
           page: options.page ?? 1,
+           sortedBy: options?.sortedBy ?? "created_at_DESC"
         });
 
         const result = await getMessages({ variables });
