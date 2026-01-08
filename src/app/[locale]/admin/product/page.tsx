@@ -163,8 +163,6 @@ export default function Product() {
               <option value={1}>VIP 1</option>
               <option value={2}>VIP 2</option>
               <option value={3}>VIP 3</option>
-              <option value={4}>VIP 4</option>
-              <option value={5}>VIP 5</option>
             </select>
           </div>
           <div className="flex gap-4">

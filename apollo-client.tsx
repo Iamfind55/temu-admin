@@ -52,13 +52,15 @@ import Cookies from "js-cookie";
 const createApolloClient = () => {
   // HTTP link for queries and mutations
   const httpLink = new HttpLink({
-    uri: "http://localhost:9091/graphql",
+    // uri: "http://localhost:9091/graphql",
+    uri:"https://temu.tiktokshop.online/graphql"
   });
 
   // WebSocket link for subscriptions
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: "ws://localhost:9091/graphql",
+      // url: "ws://localhost:9091/graphql",
+      url: "wss://temu.tiktokshop.online/graphql",
       connectionParams: () => ({
         Authorization: Cookies.get("auth_token") || "",
       }),

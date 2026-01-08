@@ -29,7 +29,7 @@ export function useFetchConversations() {
           where: options?.where,
           limit: options?.limit ?? 10,
           page: options?.page ?? 1,
-          sortedBy: options?.sortedBy ?? undefined,
+          sortedBy: options?.sortedBy ?? "created_at_DESC"
         });
 
         const result = await getConversations({ variables });

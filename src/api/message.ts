@@ -32,8 +32,8 @@ query GetConversations($where: ConversationWhereInput, $limit: Int, $page: Int, 
 }`
 
 export const GET_MESSAGE = gql`
-query Data($where: MessageWhereInput!, $limit: Int, $page: Int) {
-  getMessages(where: $where, limit: $limit, page: $page) {
+query Data($where: MessageWhereInput!, $limit: Int, $page: Int, $sortedBy: BaseOrderByInput) {
+  getMessages(where: $where, limit: $limit, page: $page, sortedBy: $sortedBy) {
     data {
       id
       conversation_id
@@ -41,9 +41,9 @@ query Data($where: MessageWhereInput!, $limit: Int, $page: Int) {
         id
         title
       }
+      attachment
       is_read
       sender_id
-      attachment
       shop_sender {
         id
         email
