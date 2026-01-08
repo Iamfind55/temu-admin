@@ -14,7 +14,7 @@ import Cookies from "js-cookie";
 const createApolloClient = () => {
   // HTTP link for queries and mutations
   const httpLink = new HttpLink({
-    uri: "http://api.temu-shop.online/graphql",
+    uri: "https://api.temu-shop.online/graphql",
   });
 
   // WebSocket link for subscriptions
