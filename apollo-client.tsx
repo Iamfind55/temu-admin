@@ -14,13 +14,13 @@ import Cookies from "js-cookie";
 const createApolloClient = () => {
   // HTTP link for queries and mutations
   const httpLink = new HttpLink({
-    uri: "http://api.temushop.online/graphql",
+    uri: "http://api.temu-shop.online/graphql",
   });
 
   // WebSocket link for subscriptions
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: "ws://api.temushop.online/graphql",
+      url: "ws://api.temu-shop.online/graphql",
       connectionParams: () => ({
         Authorization: Cookies.get("auth_token") || "",
       }),

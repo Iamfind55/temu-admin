@@ -42,10 +42,10 @@ export default async function RootLayout({
     <NextIntlClientProvider>
       <DynamicApolloClientWrapper>
         <html lang={locale} className={geist.className}>
-          <body className="bg-dark font-sans">
-            <div className="text-white h-screen">
+          <body className="font-sans">
+            <div className="text-white min-h-screen">
               <ReduxProvider>
-                <div className="justify-center text-white h-screen">
+                <div className="justify-center text-white min-h-screen">
                   {children}
                 </div>
                 <GlobalNotification />

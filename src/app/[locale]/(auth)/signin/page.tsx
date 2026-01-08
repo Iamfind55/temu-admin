@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client";
 
@@ -122,16 +121,18 @@ export default function SignIn() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-white">
-      <div className="h-auto w-full flex items-center justify-center">
-        <div className="pt-20 w-full sm:border  sm:border-secondary sm:w-2/4 bg-white text-black h-auto flex items-center justify-center flex-col gap-6 rounded py-6">
-          <Image
-            src="https://res.cloudinary.com/dwzjfryoh/image/upload/v1760459478/Temu_logo_icon_h3c98r.png"
-            alt="Logo"
-            width={100}
-            height={150}
-          />
-          <form className="w-4/5 mt-10" onSubmit={handleSubmitForm}>
+    <div className="relative min-h-screen w-full">
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/shop-bg2.webp')" }}
+      />
+      <div className="relative z-10 min-h-screen flex items-center justify-center">
+        <div className="w-full border shadow rounded-md sm:w-2/4 bg-white text-black h-auto flex items-center justify-center flex-col gap-6 rounded py-6">
+          <form className="w-11/12" onSubmit={handleSubmitForm}>
+            <div className="space-y-4">
+              <h1 className="text-4xl">Welcome back!</h1>
+              <h1>Temushop admin management:</h1>
+            </div>
             <div className="my-5">
               <Textfield
                 placeholder="Enter username or email...."
