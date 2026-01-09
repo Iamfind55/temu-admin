@@ -195,7 +195,7 @@ export default function OrderPageList() {
 
   return (
     <div className="space-y-2 flex items-start justify-start flex-col gap-4">
-      <div className="w-full flex justify-between items-center">
+      <div className="hidden w-full sm:flex justify-between items-center">
         <Breadcrumb
           items={[
             { label: "Admin dashboard", value: "/admin" },
@@ -205,7 +205,7 @@ export default function OrderPageList() {
       </div>
 
       {/* Tabs */}
-      <div className="w-full flex space-x-4 border-b-2 py-1">
+      <div className="w-full flex overflow-auto space-x-4 border-b-2 py-1">
         {Object.values(EOrderStatus).map((status) => (
           <button
             key={status}
@@ -222,65 +222,72 @@ export default function OrderPageList() {
       </div>
 
       {/* Filter Controls */}
-      <div className="w-full space-x-1 mb-6 flex text-gray-600 justify-between mt-6">
-        <div className="w-2/3 flex space-x-4">
-          <div className="w-2/5">
-            <p className="text-sm text-gray-500">Search</p>
-            <input
-              type="text"
-              value={searchInput}
-              placeholder="Enter order no, customer name..."
-              onChange={handleSearchInput}
-              onKeyDown={handleKeyPress}
-              className="h-9 text-sm p-2 rounded w-full border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
-            />
-          </div>
-          <div className="flex gap-4">
-            <div>
-              <p className="mx-2 text-sm text-gray-500">Start date</p>
+      <div className="w-full mb-6 text-gray-600 mt-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+          {/* Left Side Filters */}
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            {/* Search */}
+            <div className="w-full sm:w-2/5">
+              <p className="text-sm text-gray-500 mb-1">Search</p>
               <input
-                type="date"
-                onChange={(e) =>
-                  updatedAtRange(
-                    e.target.value,
-                    filters.dateRange?.endDate || ""
-                  )
-                }
-                className="h-9 text-sm p-2 rounded w-full  border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+                type="text"
+                value={searchInput}
+                placeholder="Enter order no, customer name..."
+                onChange={handleSearchInput}
+                onKeyDown={handleKeyPress}
+                className="h-9 text-sm p-2 rounded w-full border focus:border-b_text focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none"
               />
             </div>
-            <div>
-              <p className="mx-2 text-gray-500 text-sm">End date</p>
-              <input
-                type="date"
-                onChange={(e) =>
-                  updatedAtRange(
-                    filters.dateRange?.startDate || "",
-                    e.target.value
-                  )
-                }
-                className="h-9 text-sm p-2 rounded w-full  border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
-              />
-            </div>
-          </div>
-          {selectedOrderIds?.length > 0 && (
-            <div>
-              <IconButton
-                className="w-1/2 mt-5 rounded bg-green-500 text-white p-2 text-sm text-bold"
-                type="button"
-                title="Update"
-                onClick={() => handleOpenModal()}
-              />
-            </div>
-          )}
-        </div>
 
-        <div className="flex items-center space-x-2">
-          <div>
-            <p className="text-sm text-gray-500">Sort</p>
+            {/* Date Filters */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-auto">
+                <p className="text-sm text-gray-500 mb-1">Start date</p>
+                <input
+                  type="date"
+                  onChange={(e) =>
+                    updatedAtRange(
+                      e.target.value,
+                      filters.dateRange?.endDate || ""
+                    )
+                  }
+                  className="h-9 text-sm p-2 rounded w-full border focus:border-b_text focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none"
+                />
+              </div>
+              <div className="w-full sm:w-auto">
+                <p className="text-sm text-gray-500 mb-1">End date</p>
+                <input
+                  type="date"
+                  onChange={(e) =>
+                    updatedAtRange(
+                      filters.dateRange?.startDate || "",
+                      e.target.value
+                    )
+                  }
+                  className="h-9 text-sm p-2 rounded w-full border focus:border-b_text focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Update Button */}
+            {selectedOrderIds?.length > 0 && (
+              <div className="flex items-end">
+                <IconButton
+                  className="rounded bg-green-500 text-white p-2 text-sm"
+                  type="button"
+                  title="Update"
+                  onClick={() => handleOpenModal()}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Sort */}
+          <div className="w-full sm:w-auto">
+            <p className="text-sm text-gray-500 mb-1">Sort</p>
             <select
               onChange={(e) => updateSortBy(e.target.value)}
-              className="h-9 text-sm p-2 rounded w-full  border focus:border-b_text  focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none text-dark py-1 px-3 leading-8 transition-colors duration-200 ease-in-out font-rubik"
+              className="h-9 text-sm p-2 rounded w-full border focus:border-b_text focus:bg-white focus:ring-1 focus:ring-base text-gray-500 outline-none"
             >
               <option value="created_at_DESC">Created At (Newest)</option>
               <option value="created_at_ASC">Created At (Oldest)</option>
@@ -290,9 +297,9 @@ export default function OrderPageList() {
       </div>
 
       {/* Table */}
-      <div className="w-[calc(100vw-300px)] h-screen rounded-md">
+      <div className="w-full sm:w-[calc(100vw-300px)] rounded-md pb-4">
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="min-w-[1300px] text-sm text-left rtl:text-right text-gray-500 border">
+          <table className="w-full min-w-[1200px] text-sm text-left rtl:text-right text-gray-500 border">
             <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
               <tr>
                 <th scope="col" className="px-2 py-3">

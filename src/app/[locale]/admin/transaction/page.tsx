@@ -154,16 +154,17 @@ export default function Transactions() {
     });
   }, [transactionId]);
 
-  console.log("Data:::", data);
 
   return (
     <>
-      <Breadcrumb
-        items={[
-          { label: "Admin dashboard", value: "/admin" },
-          { label: "Transaction management", value: "/transaction" },
-        ]}
-      />
+      <div className="sm:block hidden">
+        <Breadcrumb
+          items={[
+            { label: "Admin dashboard", value: "/admin" },
+            { label: "Transaction management", value: "/transaction" },
+          ]}
+        />
+      </div>
       <div className="bg-white rounded-md p-4 mt-4 text-sm text-gray-500">
         <div className="w-full flex flex-col sm:flex-row items-start justify-between gap-6">
           <div className="w-full sm:w-2/5 flex items-start justify-start gap-2 mt-2 sm:mt-0">
@@ -238,47 +239,49 @@ export default function Transactions() {
           </div>
         </div>
 
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 border rounded-md mt-4">
-          <thead className="text-xs text-gray-600 uppercase bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                id
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Slip
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Customer / Shop
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Types
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Amount
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Coin types
-              </th>
-              <th scope="col" className="px-6 py-3">
-                created_at
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {fetchTransaction?.data && fetchTransaction?.data?.map((shop, index) => {
-              return (
-                <tr key={index + 1} className="bg-white border-b">
-                  <th scope="row" className="px-6 py-4">
-                    {index + 1}
+        <div className="w-full sm:w-[calc(100vw-300px)] rounded-md pb-4">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full min-w-[1200px] text-sm text-left rtl:text-right text-gray-500 border">
+              <thead className="text-xs text-gray-600 uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    id
                   </th>
-                  <td className="px-6 py-4">
-                    {/* <Image
+                  <th scope="col" className="px-6 py-3">
+                    Slip
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Customer / Shop
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Types
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Amount
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Coin types
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    created_at
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {fetchTransaction?.data && fetchTransaction?.data?.map((shop, index) => {
+                  return (
+                    <tr key={index + 1} className="bg-white border-b">
+                      <th scope="row" className="px-6 py-4">
+                        {index + 1}
+                      </th>
+                      <td className="px-6 py-4">
+                        {/* <Image
                       className="shadow-md rounded cursor-pointer"
                       src={
                         shop?.payment_slip
@@ -290,72 +293,74 @@ export default function Transactions() {
                       height={50}
                       onClick={() => handleOpenImageModal()}
                     /> */}
-                  </td>
-                  <td className="px-6 py-4 truncate max-w-xs flex items-center justify-center gap-1">
-                    {shop?.shop?.store_name ? <ShopIcon /> : <CustomerIcon />}
-                    {shop?.shop?.store_name ? (
-                      shop?.shop?.store_name
-                    ) : (
-                      <span>
-                        {(shop?.customer?.firstName ?? "") +
-                          " " +
-                          (shop?.customer?.lastName ?? "")}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 truncate max-w-xs">
-                    {/* {shop.identifier} */}
-                    <StatusBadge status={shop.identifier} />
-                  </td>
-                  <td className="px-6 py-4 truncate max-w-xs text-center">
-                    {shop.amount}
-                  </td>
-                  <td className="px-6 py-4 truncate max-w-xs text-center">
-                    {shop.coin_type}
-                  </td>
-                  <td className="px-6 py-4 ">
-                    {formatDateToDDMMYYYY(shop?.created_at)}
-                  </td>
-                  <td className="px-6 py-4 truncate max-w-xs">
-                    <StatusBadge status={shop?.status} />
-                  </td>
-                  <td className="flex space-x-2 px-6 pt-7 pb-4">
-                    <div
-                      onClick={() => {
-                        setTransactionId(shop.id);
-                        handleOpenDetail();
-                      }}
-                      className="flex items-center justify-center bg-yellow-100 py-1 px-2 rounded gap-1 cursor-pointer"
-                    >
-                      <CloseEyeIcon
-                        size={16}
-                        className="cursor-pointer text-yellow-500"
-                      />
-                    </div>
-                    <button
-                      disabled={shop?.status !== "PENDING"}
-                      type="button"
-                      onClick={() => {
-                        if (shop?.status !== "PENDING") {
-                          return
-                        }
-                        setRow(shop);
-                        handleOpenModal();
-                      }}
-                      className="flex items-center justify-center bg-green-100 py-1 px-2 rounded gap-1 text-green-500 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-500 disabled:bg-gray-100 disabled:opacity-60"
-                    >
-                      <CheckCircleIcon
-                        size={16}
-                        className={shop?.status !== "PENDING" ? "text-gray-400" : "text-green-500"}
-                      />
-                      Confirm
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs flex items-center justify-center gap-1">
+                        {shop?.shop?.store_name ? <ShopIcon /> : <CustomerIcon />}
+                        {shop?.shop?.store_name ? (
+                          shop?.shop?.store_name
+                        ) : (
+                          <span>
+                            {(shop?.customer?.firstName ?? "") +
+                              " " +
+                              (shop?.customer?.lastName ?? "")}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {/* {shop.identifier} */}
+                        <StatusBadge status={shop.identifier} />
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs text-center">
+                        {shop.amount}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs text-center">
+                        {shop.coin_type}
+                      </td>
+                      <td className="px-6 py-4 ">
+                        {formatDateToDDMMYYYY(shop?.created_at)}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        <StatusBadge status={shop?.status} />
+                      </td>
+                      <td className="flex space-x-2 px-6 pt-7 pb-4">
+                        <div
+                          onClick={() => {
+                            setTransactionId(shop.id);
+                            handleOpenDetail();
+                          }}
+                          className="flex items-center justify-center bg-yellow-100 py-1 px-2 rounded gap-1 cursor-pointer"
+                        >
+                          <CloseEyeIcon
+                            size={16}
+                            className="cursor-pointer text-yellow-500"
+                          />
+                        </div>
+                        <button
+                          disabled={shop?.status !== "PENDING"}
+                          type="button"
+                          onClick={() => {
+                            if (shop?.status !== "PENDING") {
+                              return
+                            }
+                            setRow(shop);
+                            handleOpenModal();
+                          }}
+                          className="flex items-center justify-center bg-green-100 py-1 px-2 rounded gap-1 text-green-500 cursor-pointer disabled:cursor-not-allowed disabled:text-gray-500 disabled:bg-gray-100 disabled:opacity-60"
+                        >
+                          <CheckCircleIcon
+                            size={16}
+                            className={shop?.status !== "PENDING" ? "text-gray-400" : "text-green-500"}
+                          />
+                          Confirm
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div className="w-full flex items-end justify-end mb-4">
           <Pagination1

@@ -532,7 +532,7 @@ export default function Message() {
   return (
     <div className="flex h-[calc(100vh-120px)] bg-gray-50">
       {/* Left Panel - Conversations List */}
-      <div className="w-80 bg-white border-r flex flex-col">
+      <div className={`w-full sm:w-80 bg-white border-r flex flex-col ${selectedConversation ? 'hidden sm:flex' : 'flex'}`}>
         {/* Left Panel Header */}
         <div className="border-b px-4 py-4">
           <h1 className="text-xl font-bold text-gray-800">Messages</h1>
@@ -681,21 +681,42 @@ export default function Message() {
       </div>
 
       {/* Right Panel - Messages */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 flex flex-col ${selectedConversation ? 'flex' : 'hidden sm:flex'}`}>
         {selectedConversation ? (
           <>
             {/* Right Panel Header */}
-            <div className="bg-white border-b px-6 py-4">
+            <div className="bg-white border-b px-4 sm:px-6 py-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-800">
-                    {
-                      selectedConversation.creator?.store_name || selectedConversation.creator?.fullname || selectedConversation.creator?.email
-                    }
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {messages.length} messages
-                  </p>
+                <div className="flex items-center gap-3">
+                  {/* Back button for mobile */}
+                  <button
+                    onClick={() => setSelectedConversation(null)}
+                    className="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <svg
+                      className="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                      {
+                        selectedConversation.creator?.store_name || selectedConversation.creator?.fullname || selectedConversation.creator?.email
+                      }
+                    </h2>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                      {messages.length} messages
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -704,7 +725,7 @@ export default function Message() {
             <div
               ref={messagesContainerRef}
               onScroll={handleScroll}
-              className="flex-1 overflow-y-auto px-6 py-4 space-y-4"
+              className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 space-y-4"
             >
               {/* Loading indicator at top */}
               {isLoadingMore && (
@@ -741,7 +762,7 @@ export default function Message() {
                     }`}
                 >
                   <div
-                    className={`max-w-[70%] ${isAdminMessage(message) ? "items-end" : "items-start"
+                    className={`max-w-[85%] sm:max-w-[70%] ${isAdminMessage(message) ? "items-end" : "items-start"
                       } flex flex-col`}
                   >
                     {/* Sender Name */}
@@ -751,7 +772,7 @@ export default function Message() {
 
                     {/* Message Bubble */}
                     <div
-                      className={`rounded-lg px-4 py-3 relative group ${isAdminMessage(message)
+                      className={`rounded-lg px-3 sm:px-4 py-2 sm:py-3 relative group ${isAdminMessage(message)
                         ? "bg-white text-gray-800 border"
                         : "bg-white text-gray-800 border"
                         }`}
@@ -833,7 +854,7 @@ export default function Message() {
               {showScrollButton && (
                 <button
                   onClick={scrollToBottom}
-                  className="fixed bottom-32 right-8 bg-base text-white rounded-full p-3 shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+                  className="fixed bottom-32 right-4 sm:right-8 bg-base text-white rounded-full p-3 shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
                   title="Scroll to bottom"
                 >
                   <svg
@@ -855,7 +876,7 @@ export default function Message() {
 
             {/* Reply Preview */}
             {replyingTo && (
-              <div className="bg-blue-50 border-t border-b border-blue-200 px-6 py-2">
+              <div className="bg-blue-50 border-t border-b border-blue-200 px-3 sm:px-6 py-2">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <span className="text-xs text-gray-600 font-semibold">
@@ -889,7 +910,7 @@ export default function Message() {
 
             {/* Image Preview */}
             {imagePreview && (
-              <div className="bg-gray-100 border-t px-6 py-3">
+              <div className="bg-gray-100 border-t px-3 sm:px-6 py-3">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <Image
@@ -914,16 +935,16 @@ export default function Message() {
             )}
 
             {/* Input Area */}
-            <div className="bg-white border-t px-6 py-4">
-              <div className="flex items-end gap-3">
+            <div className="bg-white border-t px-3 sm:px-6 py-4">
+              <div className="flex items-end gap-2 sm:gap-3">
                 {/* Image Upload Button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
                   title="Upload image"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5 sm:w-6 sm:h-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -949,8 +970,8 @@ export default function Message() {
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
-                  className="text-sm flex-1 resize-none border rounded-lg px-4 py-3 focus:outline-none focus:ring-1 focus:ring-base text-gray-700"
+                  placeholder="Type your message..."
+                  className="text-sm flex-1 resize-none border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-1 focus:ring-base text-gray-700"
                   rows={2}
                 />
 
@@ -958,7 +979,7 @@ export default function Message() {
                 <button
                   onClick={handleSendMessage}
                   disabled={isUploading}
-                  className="px-6 py-3 bg-base text-white rounded-lg  disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-base text-white rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium text-sm flex-shrink-0"
                 >
                   {isUploading ? (
                     <span className="flex items-center gap-2">
@@ -1041,7 +1062,7 @@ export default function Message() {
             )}
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
+          <div className="flex-1 flex items-center justify-center bg-gray-50 px-4">
             <div className="text-center">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"

@@ -39,6 +39,7 @@ import { useToast } from "@/utils/toast";
 import { useLazyQuery, useSubscription } from "@apollo/client";
 import { FaRocketchat } from "react-icons/fa";
 import { GET_UNREDMESSAGE } from "@/api/message";
+import { IoCloseOutline, IoMenuOutline } from "react-icons/io5";
 
 
 type MenuItem = {
@@ -58,6 +59,7 @@ export default function RootLayout({
   const dispatch = useDispatch();
   const { errorMessage } = useToast();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [openMenus, setOpenMenus] = React.useState<string[]>([]);
 
   const { admin } = useSelector((state: any) => state.auth);
@@ -67,6 +69,10 @@ export default function RootLayout({
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   // Toggle the dropdown menu
@@ -322,16 +328,16 @@ export default function RootLayout({
 
   return (
     <div className="h-screen overflow-hidden">
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-between">
+        {/* Desktop Sidebar */}
         <div className="hidden sm:block h-screen w-1/5">
-          <div className="h-[10vh] flex items-center justify-around bg-base">
+          <div className="h-[10vh] flex items-center justify-center bg-base">
             <Image
-              src={
-                "https://res.cloudinary.com/dwzjfryoh/image/upload/v1760459478/Temu_logo_icon_h3c98r.png"
-              }
+              src="https://res.cloudinary.com/dwzjfryoh/image/upload/v1760459478/Temu_logo_icon_h3c98r.png"
               alt="Logo"
-              width={isCollapsed ? 150 : 80}
-              height={isCollapsed ? 100 : 100}
+              width={80}
+              height={80}
+              className="object-contain"
             />
           </div>
           <div className="flex items-center justify-between flex-col h-[90vh] bg-gray-200">
@@ -342,7 +348,6 @@ export default function RootLayout({
                   ? item.route
                   : `/${item.route}`;
 
-                // Ensure languagePrefix does not duplicate in `item.route`
                 const fullRoute = routePath.startsWith(`/${languagePrefix}`)
                   ? routePath
                   : `/${languagePrefix}${routePath}`.replace(/\/{2,}/g, "/");
@@ -359,7 +364,6 @@ export default function RootLayout({
 
                 return (
                   <div key={index} className="px-4">
-                    {/* Parent Menu */}
                     <div
                       onClick={() =>
                         item.children
@@ -409,7 +413,6 @@ export default function RootLayout({
                       )}
                     </div>
 
-                    {/* Child Menus */}
                     {item.children && isMenuOpen && (
                       <div className="ml-10">
                         {item.children.map((child, idx) => {
@@ -460,9 +463,184 @@ export default function RootLayout({
 
           </div>
         </div>
+
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden"
+            onClick={toggleMobileMenu}
+          />
+        )}
+
+        <div
+          className={`fixed top-0 left-0 h-screen w-4/5 max-w-xs bg-white z-50 transform transition-transform duration-300 sm:hidden ${
+            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="h-[10vh] flex items-center justify-between px-4 bg-base">
+            <Image
+              src="https://res.cloudinary.com/dwzjfryoh/image/upload/v1760459478/Temu_logo_icon_h3c98r.png"
+              alt="Logo"
+              width={60}
+              height={60}
+              className="object-contain"
+            />
+            <button onClick={toggleMobileMenu} className="text-white">
+              <IoCloseOutline size={32} />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between flex-col h-[90vh] bg-gray-200 overflow-y-auto">
+            <div className="w-full flex flex-col gap-2 mt-4">
+              {menuItems.map((item, index) => {
+                const languagePrefix = pathname?.split("/")[1];
+                const routePath = item.route.startsWith("/")
+                  ? item.route
+                  : `/${item.route}`;
+
+                const fullRoute = routePath.startsWith(`/${languagePrefix}`)
+                  ? routePath
+                  : `/${languagePrefix}${routePath}`.replace(/\/{2,}/g, "/");
+
+                const isActive =
+                  pathname === fullRoute ||
+                  (item.children &&
+                    item.children.some(
+                      (child) =>
+                        pathname ===
+                        `/${languagePrefix}${child.route.replace(/^\/+/, "")}`
+                    ));
+                const isMenuOpen = openMenus.includes(item.menu);
+
+                return (
+                  <div key={index} className="px-4">
+                    <div
+                      onClick={() => {
+                        if (item.children) {
+                          toggleMenu(item.menu);
+                        } else {
+                          router.push(item.route);
+                          setIsMobileMenuOpen(false);
+                        }
+                      }}
+                      className={`flex items-center justify-between cursor-pointer py-2 px-4 ${
+                        isActive
+                          ? "bg-base text-white rounded-md"
+                          : "text-black hover:bg-orange-300 rounded-md hover:text-black"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 text-sm">
+                        <span>{item.icon}</span>
+                        <span className="text-nowrap">{item.menu}</span>
+                        <span>
+                          {item.menu === "Manage transaction" ? (
+                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {transactionAmount}
+                            </span>
+                          ) : item.menu === "Order Management" ? (
+                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {orderAmount}
+                            </span>
+                          ) : item.menu === "Shop Management" ? (
+                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {vipAmount}
+                            </span>
+                          ) : item.menu === "Message Center" &&
+                            unreadMessageCount !== 0 ? (
+                            <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {unreadMessageCount}
+                            </span>
+                          ) : (
+                            ""
+                          )}
+                        </span>
+                      </div>
+                      {item.children && (
+                        <span className="text-gray-400">
+                          {isMenuOpen ? (
+                            <ArrowDownIcon size={18} />
+                          ) : (
+                            <NextIcon size={16} />
+                          )}
+                        </span>
+                      )}
+                    </div>
+
+                    {item.children && isMenuOpen && (
+                      <div className="ml-10">
+                        {item.children.map((child, idx) => {
+                          const languagePrefix = pathname?.split("/")[1];
+                          const childRoutePath = child.route.startsWith("/")
+                            ? child.route
+                            : `/${child.route}`;
+
+                          const fullChildRoute = childRoutePath.startsWith(
+                            `/${languagePrefix}`
+                          )
+                            ? childRoutePath
+                            : `/${languagePrefix}${childRoutePath}`.replace(
+                                /\/{2,}/g,
+                                "/"
+                              );
+
+                          const isChildActive = pathname === fullChildRoute;
+
+                          return (
+                            <Link
+                              href={child.route}
+                              key={idx}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className={`flex items-center justify-start gap-2 py-2 text-sm ${
+                                isChildActive
+                                  ? "bg-gray-200 text-neon_pink"
+                                  : "text-black hover:bg-gray-300"
+                              }`}
+                            >
+                              <CircleIcon size={10} />
+                              <span>{child.menu}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              onClick={() => {
+                handleLogout();
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full text-white cursor-pointer flex items-center justify-center gap-2 text-sm bg-primary py-4 px-2"
+            >
+              Logout
+              <LogoutIcon size={24} />
+            </div>
+          </div>
+        </div>
+
         <div className="w-full sm:w-4/5">
-          <div className="w-full h-[10vh] flex border-b items-cente justify-end px-4 bg-base">
-            <div className="flex items-center mr-10">
+          <div className="w-full h-[10vh] flex border-b items-center justify-between px-4 bg-base">
+            <button
+              onClick={toggleMobileMenu}
+              className="sm:hidden text-white p-2 hover:bg-opacity-80 rounded"
+            >
+              <IoMenuOutline size={32} />
+            </button>
+
+            {/* <div className="sm:hidden flex-1 flex justify-center">
+              <Image
+                src="https://res.cloudinary.com/dwzjfryoh/image/upload/v1760459478/Temu_logo_icon_h3c98r.png"
+                alt="Logo"
+                width={50}
+                height={50}
+                className="object-contain"
+              />
+            </div> */}
+
+            <div className="hidden sm:flex items-center">
+            </div>
+            <div className="flex items-center">
               <div
                 onClick={() => router.push("/admin/profile")}
                 className="w-full flex items-center justify-start gap-2 text-sm px-2 cursor-pointer"
@@ -480,8 +658,7 @@ export default function RootLayout({
                   />
                   <div className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-500 border rounded-full"></div>
                 </div>
-
-                <div className="text-sm">
+                <div className="sm:block hidden text-sm">
                   <p>{admin.email}</p>
                   <p className="text-sm">{admin.username}</p>
                 </div>

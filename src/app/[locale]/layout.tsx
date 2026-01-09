@@ -15,7 +15,7 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: "temushop.net",
+  title: "temushop.online",
   description: "Temushop shop is the largest and biggest e-commerce platform",
   keywords: ["temushop", "shopping.temushop", "online shopping"],
 };

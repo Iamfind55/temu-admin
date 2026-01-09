@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@apollo/client";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 // components
-import { NextIcon } from "@/icons/page";
-import Textfield from "@/components/textField";
 import IconButton from "@/components/iconButton";
 import Password from "@/components/passwordTextField";
+import Textfield from "@/components/textField";
+import { NextIcon } from "@/icons/page";
 
 // types and untils
+import { ADMIN_SIGN_IN } from "@/api/auth";
+import { login } from "@/redux/slice/authSlice";
 import { ILogins } from "@/types/login";
 import { useToast } from "@/utils/toast";
 import { useDispatch } from "react-redux";
-import { ADMIN_SIGN_IN } from "@/api/auth";
-import { login } from "@/redux/slice/authSlice";
 
 export default function SignIn() {
   const router = useRouter();
@@ -127,7 +127,7 @@ export default function SignIn() {
         style={{ backgroundImage: "url('/images/shop-bg2.webp')" }}
       />
       <div className="relative z-10 min-h-screen flex items-center justify-center">
-        <div className="w-full border shadow rounded-md sm:w-2/4 bg-white text-black h-auto flex items-center justify-center flex-col gap-6 rounded py-6">
+        <div className="w-full border shadow rounded-md sm:w-2/4 bg-white text-black h-auto flex items-center justify-center flex-col gap-6 py-6">
           <form className="w-11/12" onSubmit={handleSubmitForm}>
             <div className="space-y-4">
               <h1 className="text-4xl">Welcome back!</h1>
