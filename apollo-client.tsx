@@ -22,7 +22,7 @@ const createApolloClient = () => {
   const wsLink = new GraphQLWsLink(
     createClient({
       // url: "ws://localhost:9091/graphql",
-      url: "wss://api.temu-kshop.online/graphql",
+      url: "wss://api.temu-shop.online/graphql",
       connectionParams: () => ({
         Authorization: Cookies.get("auth_token") || "",
       }),
