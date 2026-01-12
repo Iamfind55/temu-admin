@@ -35,8 +35,24 @@ export default function Message() {
         conversationId: selectedConversation?.id,
       },
       skip: !selectedConversation?.id,
+      shouldResubscribe: true,
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all', // Continue even if there are GraphQL errors
+      onSubscriptionData: ({ subscriptionData: subData }) => {
+        // Handle subscription data safely
+        if (subData?.data?.sendMessage) {
+          const message = subData.data.sendMessage;
+          if (!message.id) {
+            return;
+          }
+        }
+      },
+      
     }
   );
+
+ 
+
   React.useEffect(() => {
     if (!selectedConversation) return;
     const readMessage = async () => {
@@ -58,22 +74,52 @@ export default function Message() {
 
 
   React.useEffect(() => {
-    if (!subscriptionData) return;
-    const newMessage = subscriptionData.sendMessage;
+    try {
+      if (!subscriptionData) return;
 
-    setAllMessages(prevMessages => {
-      if (prevMessages.some(m => m.id === newMessage.id)) {
-        return prevMessages;
+      console.log('>>> Processing subscription data:', subscriptionData);
+
+      const newMessage = subscriptionData.sendMessage;
+
+      // Validate message has required fields
+      if (!newMessage) {
+        console.warn('⚠️  Subscription data is empty');
+        return;
       }
-      // Append new message at the end (newest messages at bottom)
-      return [...prevMessages, newMessage];
-    });
 
-    // Scroll to bottom when new message arrives
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }, [subscriptionData]);
+      if (!newMessage.id) {
+        console.error('❌ Invalid message received (missing id):', newMessage);
+        return;
+      }
+
+      console.log('>>> New message received from subscription:', newMessage);
+      console.log('>>> Message conversation_id:', newMessage.conversation_id);
+      console.log('>>> Current selected conversation_id:', selectedConversation?.id);
+
+      // Only process messages for the currently selected conversation
+      if (newMessage.conversation_id !== selectedConversation?.id) {
+        console.log('⚠️  Message is for different conversation, skipping');
+        return;
+      }
+
+      setAllMessages(prevMessages => {
+        if (prevMessages.some(m => m.id === newMessage.id)) {
+          console.log('>>> Message already exists, skipping');
+          return prevMessages;
+        }
+        console.log('>>> Adding new message to allMessages');
+        // Append new message at the end (newest messages at bottom)
+        return [...prevMessages, newMessage];
+      });
+
+      // Scroll to bottom when new message arrives
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (err) {
+      console.error('❌ Error processing subscription data:', err);
+    }
+  }, [subscriptionData, selectedConversation?.id]);
 
   const messages = allMessages.filter(
     (msg) => msg.conversation_id === selectedConversation?.id
@@ -541,7 +587,7 @@ export default function Message() {
           </p> */}
         </div>
 
-  
+
         {/* Conversations List */}
         <div
           ref={conversationsContainerRef}
