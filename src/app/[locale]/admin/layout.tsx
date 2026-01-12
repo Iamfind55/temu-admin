@@ -106,11 +106,11 @@ export default function RootLayout({
       menu: "Brand Management",
       route: "/admin/brand",
     },
-    {
-      icon: <BannerIcon size={16} />,
-      menu: "Banner Management",
-      route: "/admin/banner",
-    },
+    // {
+    //   icon: <BannerIcon size={16} />,
+    //   menu: "Banner Management",
+    //   route: "/admin/banner",
+    // },
     {
       icon: <CartIcon size={16} />,
       menu: "Order Management",
