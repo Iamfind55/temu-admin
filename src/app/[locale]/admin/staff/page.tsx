@@ -391,129 +391,138 @@ export default function Customer() {
             />
           </div>
         </div>
-        <div className="w-full h-auto mt-6">
-          <div className="w-full hidden sm:block">
-            {fetchEmployees.total ?? 0 > 0 ? (
-              <table className="w-full bg-gray overflow-x-auto text-left text-sm rtl:text-right border rounded">
-                <thead className="sticky top-0 text-xs bg-white">
-                  <tr className="border-b border-gray text-left uppercase">
-                    <th scope="col" className="py-3 pl-1 text-center">
-                      id
-                    </th>
-                    <th scope="col" className="py-3 pl-1">
-                      full name
-                    </th>
-                    <th scope="col" className="py-3 pl-1">
-                      email
-                    </th>
-                    <th scope="col" className="py-3 pl-1">
-                      username
-                    </th>
-                    <th scope="col" className="py-3 pl-1">
-                      Birthday
-                    </th>
-                    <th scope="col" className="py-3 pl-1 text-center">
-                      Status
-                    </th>
-                    <th scope="col" className="py-3 pl-1">
-                      created_at
-                    </th>
-                    <th scope="col" className="py-3 pl-1 text-start">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fetchEmployees?.data?.map((employee, index) => (
-                    <tr
-                      key={employee.id + index}
-                      className="border-b border-gray bg-white hover:bg-gray py-6 text-gray-500"
-                    >
-                      <td className="py-3 pl-1 text-center">{index + 1}</td>
-                      <td className="flex items-center justify-start gap-2 py-3 pl-1">
-                        <Image
-                          className="shadow-md rounded"
-                          src={
-                            employee.image &&
-                              typeof employee.image === "string" &&
-                              employee.image.startsWith("http")
-                              ? employee.image
-                              : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
-                          }
-                          alt="default"
-                          width={80}
-                          height={80}
-                        />
-                        <p>{employee.firstName + " " + employee.lastName}</p>
-                      </td>
-                      <td className="py-3 pl-1">{employee.email}</td>
-                      <td className="py-3 pl-1">{employee.username}</td>
-                      <td className="py-3 pl-1">
-                        {formatDateToDDMMYYYY(employee.dob)}
-                      </td>
-
-                      <td className="py-3 pl-1 text-center">
-                        <StatusBadge status={employee.status} />
-                      </td>
-
-                      <td className="py-3 pl-1">
-                        {formatDateToDDMMYYYY(employee.created_at)}
-                      </td>
-                      <td className="py-3 pl-1 text-center">
-                        <div className="flex gap-4">
-                          <TrashIcon
-                            size={18}
-                            className="cursor-pointer hover:text-red-500"
-                            onClick={() => {
-                              setEmployeeData(employee);
-                              handleOpenDeleteModal();
-                            }}
-                          />
-                          <EditIcon
-                            size={20}
-                            className="cursor-pointer hover:text-red-500"
-                            onClick={() => {
-                              setIsUpdate(true);
-                              setEmployeeData({
-                                id: employee.id,
-                                firstName: employee.firstName,
-                                lastName: employee.lastName,
-                                email: employee.email,
-                                dob: new Date(employee.dob).toISOString(),
-                                image: employee.image,
-                                status: employee.status,
-                                password: employee.password,
-                                username: employee.username,
-                                created_at: employee.created_at,
-                              });
-                              handleOpenManageModal();
-                            }}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <EmptyPage />
-            )}
+        {fetchEmployees?.loading ? (
+          <div className="flex items-center justify-center min-h-[500px]">
+            <Loading color="green" size="lg" />
           </div>
-        </div>
-        <div className="w-full flex items-end justify-end mb-4">
-          <Pagination1
-            filter={filter.data}
-            totalPage={Math.ceil(
-              (fetchEmployees.total ?? 0) / filter.data.limit
-            )}
-            onPageChange={(e) => {
-              filter.dispatch({
-                type: filter.ACTION_TYPE.PAGE,
-                payload: e,
-              });
-            }}
-          />
-        </div>
+        ) : (
+          <div>
+            <div className="w-full h-auto mt-6">
+              <div className="w-full hidden sm:block">
+                {fetchEmployees.total ?? 0 > 0 ? (
+                  <table className="w-full bg-gray overflow-x-auto text-left text-sm rtl:text-right border rounded">
+                    <thead className="sticky top-0 text-xs bg-white">
+                      <tr className="border-b border-gray text-left uppercase">
+                        <th scope="col" className="py-3 pl-1 text-center">
+                          id
+                        </th>
+                        <th scope="col" className="py-3 pl-1">
+                          full name
+                        </th>
+                        <th scope="col" className="py-3 pl-1">
+                          email
+                        </th>
+                        <th scope="col" className="py-3 pl-1">
+                          username
+                        </th>
+                        <th scope="col" className="py-3 pl-1">
+                          Birthday
+                        </th>
+                        <th scope="col" className="py-3 pl-1 text-center">
+                          Status
+                        </th>
+                        <th scope="col" className="py-3 pl-1">
+                          created_at
+                        </th>
+                        <th scope="col" className="py-3 pl-1 text-start">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {fetchEmployees?.data?.map((employee, index) => (
+                        <tr
+                          key={employee.id + index}
+                          className="border-b border-gray bg-white hover:bg-gray py-6 text-gray-500"
+                        >
+                          <td className="py-3 pl-1 text-center">{index + 1}</td>
+                          <td className="flex items-center justify-start gap-2 py-3 pl-1">
+                            <Image
+                              className="shadow-md rounded"
+                              src={
+                                employee.image &&
+                                  typeof employee.image === "string" &&
+                                  employee.image.startsWith("http")
+                                  ? employee.image
+                                  : "https://res.cloudinary.com/dvh8zf1nm/image/upload/v1738860057/default-image_uwedsh.webp"
+                              }
+                              alt="default"
+                              width={80}
+                              height={80}
+                            />
+                            <p>{employee.firstName + " " + employee.lastName}</p>
+                          </td>
+                          <td className="py-3 pl-1">{employee.email}</td>
+                          <td className="py-3 pl-1">{employee.username}</td>
+                          <td className="py-3 pl-1">
+                            {formatDateToDDMMYYYY(employee.dob)}
+                          </td>
+
+                          <td className="py-3 pl-1 text-center">
+                            <StatusBadge status={employee.status} />
+                          </td>
+
+                          <td className="py-3 pl-1">
+                            {formatDateToDDMMYYYY(employee.created_at)}
+                          </td>
+                          <td className="py-3 pl-1 text-center">
+                            <div className="flex gap-4">
+                              <TrashIcon
+                                size={18}
+                                className="cursor-pointer hover:text-red-500"
+                                onClick={() => {
+                                  setEmployeeData(employee);
+                                  handleOpenDeleteModal();
+                                }}
+                              />
+                              <EditIcon
+                                size={20}
+                                className="cursor-pointer hover:text-red-500"
+                                onClick={() => {
+                                  setIsUpdate(true);
+                                  setEmployeeData({
+                                    id: employee.id,
+                                    firstName: employee.firstName,
+                                    lastName: employee.lastName,
+                                    email: employee.email,
+                                    dob: new Date(employee.dob).toISOString(),
+                                    image: employee.image,
+                                    status: employee.status,
+                                    password: employee.password,
+                                    username: employee.username,
+                                    created_at: employee.created_at,
+                                  });
+                                  handleOpenManageModal();
+                                }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <EmptyPage />
+                )}
+              </div>
+            </div>
+            <div className="w-full flex items-end justify-end mb-4">
+              <Pagination1
+                filter={filter.data}
+                totalPage={Math.ceil(
+                  (fetchEmployees.total ?? 0) / filter.data.limit
+                )}
+                onPageChange={(e) => {
+                  filter.dispatch({
+                    type: filter.ACTION_TYPE.PAGE,
+                    payload: e,
+                  });
+                }}
+              />
+            </div>
+          </div>
+        )
+        }
 
         <DeleteModal
           isOpen={isOpen}

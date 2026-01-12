@@ -8,7 +8,7 @@ const useFetchTransactions = ({ filter }: { filter: IFilter }) => {
   const { identifier, coin_type, limit, page, createdAtBetween } = filter;
   const numericLimit = Number(limit);
 
-  const [getTransactions, { data, refetch }] =
+  const [getTransactions, { data, refetch,loading }] =
     useLazyQuery<GetITransactionResponse>(QUERY_ADMIN_GET_TRANSACTIONS, {
       fetchPolicy: "no-cache",
     });
@@ -42,6 +42,7 @@ const useFetchTransactions = ({ filter }: { filter: IFilter }) => {
     getTransactions,
     fetchEmployees,
     refetch,
+    loading,
     data: data?.adminGetTransactionHistories?.data?.map(
       (transaction, index) => ({
         ...transaction,

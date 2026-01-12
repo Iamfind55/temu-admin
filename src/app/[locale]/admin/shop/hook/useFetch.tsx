@@ -9,9 +9,7 @@ const useFetchShops = ({ filter }: { filter: IFilter }) => {
     filter;
   const numericLimit = Number(limit);
   const numbericShop_vip = Number(shop_vip);
-  console.log(numbericShop_vip);
-  console.log(typeof numbericShop_vip);
-  const [getShops, { data, refetch }] = useLazyQuery<GetShopResponse>(
+  const [getShops, { data, refetch, loading }] = useLazyQuery<GetShopResponse>(
     GET_SHOPS,
     {
       fetchPolicy: "no-cache",
@@ -30,11 +28,11 @@ const useFetchShops = ({ filter }: { filter: IFilter }) => {
           ...(keyword && { keyword: keyword }),
           ...(createdAtBetween?.startDate &&
             createdAtBetween.endDate && {
-              createdAtBetween: {
-                startDate: createdAtBetween.startDate,
-                endDate: createdAtBetween.endDate,
-              },
-            }),
+            createdAtBetween: {
+              startDate: createdAtBetween.startDate,
+              endDate: createdAtBetween.endDate,
+            },
+          }),
         },
       },
     });
@@ -45,6 +43,7 @@ const useFetchShops = ({ filter }: { filter: IFilter }) => {
   }, [filter]);
 
   return {
+    loading,
     getShops,
     fetchShops,
     refetch,

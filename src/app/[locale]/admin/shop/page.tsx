@@ -54,7 +54,7 @@ export default function ShopPageList() {
   const fetchShops = useFetchShops({
     filter: filter.data,
   });
-
+  
   const [deleteShop] = useMutation(DELETE_SHOP);
   const [approveShop, { loading: approveShopLoading }] =
     useMutation(APPROVE_SHOP);
@@ -219,7 +219,7 @@ export default function ShopPageList() {
         ]}
       />
 
-      <div className="bg-white w-full rounded py-2 px-4 flex items-start justify-start flex-col gap-2">
+      <div className="bg-white overflow-hidden w-full rounded py-2 px-4 flex items-start justify-start flex-col gap-2">
         <div className="w-full flex flex-col sm:flex-row items-start justify-between gap-6">
           <div className="w-full sm:w-2/5 flex items-start justify-start gap-2 mt-2 sm:mt-0">
             <div className="w-1/4">
@@ -312,7 +312,11 @@ export default function ShopPageList() {
         </div>
 
         <div className="overflow-x-auto w-full bg-white h-auto rounded-md">
-          {fetchShops.total ?? 0 > 0 ? (
+          {fetchShops?.loading ? (
+            <div className="flex items-center justify-center min-h-[500px]">
+              <Loading color="green" size="lg" />
+            </div>
+          ) : fetchShops.total ?? 0 > 0 ? (
             <table className="w-auto text-sm text-left rtl:text-right text-gray-500 border rounded">
               <thead className="text-xs text-gray-600 uppercase bg-gray-50">
                 <tr>
@@ -420,7 +424,7 @@ export default function ShopPageList() {
                           ""
                         )}
 
-                        {[EShopStatus.PENDING,EShopStatus.ACTIVE].includes(shop.status) && (
+                        {[EShopStatus.PENDING, EShopStatus.ACTIVE].includes(shop.status) && (
                           <CheckCircleIcon
                             onClick={() => {
                               setSelectedShop(shop);
@@ -467,6 +471,8 @@ export default function ShopPageList() {
             <EmptyPage />
           )}
 
+        </div>
+        <div className="w-full flex justify-end">
           <div className="flex items-end justify-end text-gray-600">
             <Pagination1
               filter={filter.data}

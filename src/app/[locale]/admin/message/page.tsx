@@ -76,39 +76,22 @@ export default function Message() {
   React.useEffect(() => {
     try {
       if (!subscriptionData) return;
-
-      console.log('>>> Processing subscription data:', subscriptionData);
-
       const newMessage = subscriptionData.sendMessage;
 
-      // Validate message has required fields
       if (!newMessage) {
-        console.warn('⚠️  Subscription data is empty');
         return;
       }
 
-      if (!newMessage.id) {
-        console.error('❌ Invalid message received (missing id):', newMessage);
-        return;
-      }
-
-      console.log('>>> New message received from subscription:', newMessage);
-      console.log('>>> Message conversation_id:', newMessage.conversation_id);
-      console.log('>>> Current selected conversation_id:', selectedConversation?.id);
 
       // Only process messages for the currently selected conversation
       if (newMessage.conversation_id !== selectedConversation?.id) {
-        console.log('⚠️  Message is for different conversation, skipping');
         return;
       }
 
       setAllMessages(prevMessages => {
         if (prevMessages.some(m => m.id === newMessage.id)) {
-          console.log('>>> Message already exists, skipping');
           return prevMessages;
         }
-        console.log('>>> Adding new message to allMessages');
-        // Append new message at the end (newest messages at bottom)
         return [...prevMessages, newMessage];
       });
 

@@ -8,7 +8,7 @@ const useFetchCustomers = ({ filter }: { filter: IFilter }) => {
   const { keyword, status, limit, page, createdAtBetween } = filter;
   const numericLimit = Number(limit);
 
-  const [getCustomers, { data, refetch }] = useLazyQuery<GetCustomerResponse>(
+  const [getCustomers, { data, refetch,loading }] = useLazyQuery<GetCustomerResponse>(
     QUERY_ALL_CUSTOMERS,
     {
       fetchPolicy: "no-cache",
@@ -44,6 +44,7 @@ const useFetchCustomers = ({ filter }: { filter: IFilter }) => {
     getCustomers,
     fetchCustomers,
     refetch,
+    loading,
     data: data?.getCustomers?.data?.map((customer, index) => ({
       ...customer,
       no: index + 1,

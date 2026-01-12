@@ -55,6 +55,7 @@ export default function OrderPageList() {
     data,
     error,
     updatePage,
+    loading,
     handleChangeOrderStatus,
   } = useOrderFilters();
 
@@ -296,166 +297,173 @@ export default function OrderPageList() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="w-full sm:w-[calc(100vw-300px)] rounded-md pb-4">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full min-w-[1200px] text-sm text-left rtl:text-right text-gray-500 border">
-            <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
-              <tr>
-                <th scope="col" className="px-2 py-3">
-                  <div className="flex space-x-2">
-                    {[
-                      EOrderStatus.PROCESSING,
-                      EOrderStatus.PACKING,
-                      EOrderStatus.SHIPPING,
-                    ].includes(activeTab) && (
-                        <input
-                          className="cursor-pointer"
-                          type="checkbox"
-                          name="checkAll"
-                          checked={
-                            selectedOrderIds?.length > 0 &&
-                            orders?.length === selectedOrderIds.length
-                          }
-                          onChange={() => handleCheckAllBox()}
-                        />
-                      )}
-                    <div>{g("_table_no")}</div>
-                  </div>
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  {g("_customer")}
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Shop
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Total product
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  {g("_total_price")}
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  {g("_discount")}
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  {g("_profit")}
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Shipping
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Order status
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Payment status
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Sign in status
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Date
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders?.map((order, index) => {
-                return (
-                  <tr className="bg-white border-b" key={order?.id}>
-                    <th scope="row" className="px-2 py-4">
-                      <div className="flex space-x-2">
-                        {[
+
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[500px] w-full">
+          <Loading color="green" size="lg" />
+        </div>
+      ) : (
+        <div className="w-full lg:w-[calc(100vw-320px)] rounded-md pb-4">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full min-w-[1200px] text-sm text-left rtl:text-right text-gray-500 border">
+              <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
+                <tr>
+                  <th scope="col" className="px-2 py-3">
+                    <div className="flex space-x-2">
+                      {[
+                        EOrderStatus.PROCESSING,
+                        EOrderStatus.PACKING,
+                        EOrderStatus.SHIPPING,
+                      ].includes(activeTab) && (
+                          <input
+                            className="cursor-pointer"
+                            type="checkbox"
+                            name="checkAll"
+                            checked={
+                              selectedOrderIds?.length > 0 &&
+                              orders?.length === selectedOrderIds.length
+                            }
+                            onChange={() => handleCheckAllBox()}
+                          />
+                        )}
+                      <div>{g("_table_no")}</div>
+                    </div>
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    {g("_customer")}
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Shop
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Total product
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    {g("_total_price")}
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    {g("_discount")}
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    {g("_profit")}
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Shipping
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Order status
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Payment status
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Sign in status
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Date
+                  </th>
+                  <th scope="col" className="px-2 py-3">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders?.map((order, index) => {
+                  return (
+                    <tr className="bg-white border-b" key={order?.id}>
+                      <th scope="row" className="px-2 py-4">
+                        <div className="flex space-x-2">
+                          {[
+                            EOrderStatus.PROCESSING,
+                            EOrderStatus.PACKING,
+                            EOrderStatus.SHIPPING,
+                          ].includes(order.order_status) && (
+                              <input
+                                className="cursor-pointer"
+                                type="checkbox"
+                                name="id"
+                                checked={isCheckedBox(order.id)}
+                                onChange={() => handleCheckBox(order)}
+                              />
+                            )}
+                          <span>
+                            {(filters.page - 1) * filters.limit + index + 1}
+                          </span>
+                        </div>
+                      </th>
+
+                      <td className="px-2 py-4 truncate">
+                        {`${order?.customerData?.firstName || ""} ${order?.customerData?.lastName || ""
+                          }`}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        {`${order?.shop?.store_name || order?.shop?.fullname || ""}`}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        {order?.total_products}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        ${formatNumber(order?.total_price)}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        {order?.total_discount}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        {order?.profit}
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        <div>
+                          {order?.logistics?.company_name}
+                          <p className="text-center text-xs">{order?.logistics?.cost < 1 ? "Free" : order?.logistics?.cost}</p>
+                        </div>
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        <StatusBadge status={order?.order_status} />
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        <StatusBadge status={order?.payment_status} />
+                      </td>
+                      <td className="px-2 py-4 truncate">
+                        <StatusBadge status={order?.sign_in_status} />
+                      </td>
+                      <td className="px-2 py-4">
+                        {formatDateToDDMMYYYY(order?.created_at)}
+                      </td>
+                      <td>
+                        <div className="flex items-center h-full w-full justify-center">{[
                           EOrderStatus.PROCESSING,
                           EOrderStatus.PACKING,
                           EOrderStatus.SHIPPING,
                         ].includes(order.order_status) && (
-                            <input
-                              className="cursor-pointer"
-                              type="checkbox"
-                              name="id"
-                              checked={isCheckedBox(order.id)}
-                              onChange={() => handleCheckBox(order)}
+                            <CheckCircleIcon
+                              onClick={() => handleConfirmOrder(order)}
+                              size={20}
+                              className="cursor-pointer hover:text-neon_pink"
                             />
                           )}
-                        <span>
-                          {(filters.page - 1) * filters.limit + index + 1}
-                        </span>
-                      </div>
-                    </th>
-
-                    <td className="px-2 py-4 truncate">
-                      {`${order?.customerData?.firstName || ""} ${order?.customerData?.lastName || ""
-                        }`}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      {`${order?.shop?.store_name || order?.shop?.fullname || ""}`}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      {order?.total_products}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      ${formatNumber(order?.total_price)}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      {order?.total_discount}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      {order?.profit}
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      <div>
-                        {order?.logistics?.company_name}
-                        <p className="text-center text-xs">{order?.logistics?.cost < 1 ? "Free" : order?.logistics?.cost}</p>
-                      </div>
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      <StatusBadge status={order?.order_status} />
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      <StatusBadge status={order?.payment_status} />
-                    </td>
-                    <td className="px-2 py-4 truncate">
-                      <StatusBadge status={order?.sign_in_status} />
-                    </td>
-                    <td className="px-2 py-4">
-                      {formatDateToDDMMYYYY(order?.created_at)}
-                    </td>
-                    <td>
-                      <div className="flex items-center h-full w-full justify-center">{[
-                        EOrderStatus.PROCESSING,
-                        EOrderStatus.PACKING,
-                        EOrderStatus.SHIPPING,
-                      ].includes(order.order_status) && (
-                          <CheckCircleIcon
-                            onClick={() => handleConfirmOrder(order)}
+                          <CloseEyeIcon
+                            onClick={() => handleViewOrderDetail(order)}
                             size={20}
                             className="cursor-pointer hover:text-neon_pink"
-                          />
-                        )}
-                        <CloseEyeIcon
-                          onClick={() => handleViewOrderDetail(order)}
-                          size={20}
-                          className="cursor-pointer hover:text-neon_pink"
-                        /></div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                          /></div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="text-gray-600 flex items-end justify-end bg-white">
+            <Pagination
+              filter={{ page: filters.page, limit: filters.limit }}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
 
-        <div className="text-gray-600 flex items-end justify-end bg-white">
-          <Pagination
-            filter={{ page: filters.page, limit: filters.limit }}
-            totalItems={totalItems}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </div>
+      )}
 
       <DeleteModal
         isOpen={isOpen}

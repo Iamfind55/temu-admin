@@ -8,7 +8,7 @@ const useFetchEmployees = ({ filter }: { filter: IFilter }) => {
   const { keyword, status, limit, page, createdAtBetween } = filter;
   const numericLimit = Number(limit);
 
-  const [getEmployees, { data, refetch }] = useLazyQuery<GetEmployeeResponse>(
+  const [getEmployees, { data, refetch,loading }] = useLazyQuery<GetEmployeeResponse>(
     QUERY_ALL_EMPLOYEES,
     {
       fetchPolicy: "no-cache",
@@ -43,6 +43,7 @@ const useFetchEmployees = ({ filter }: { filter: IFilter }) => {
   return {
     getEmployees,
     fetchEmployees,
+    loading,
     refetch,
     data: data?.getStaffs?.data?.map((employee, index) => ({
       ...employee,

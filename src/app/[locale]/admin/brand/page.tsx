@@ -20,6 +20,7 @@ import { formatDateToDDMMYYYY } from "@/utils/dateFormat";
 import { AddIcon, EditIcon, TrashIcon } from "@/icons/page";
 import Breadcrumb from "@/components/breadCrumb";
 import StatusBadge from "@/components/status";
+import Loading from "@/components/loading";
 
 export default function BrandPageList() {
   const g = useTranslations("globals");
@@ -40,6 +41,7 @@ export default function BrandPageList() {
     updateSortBy,
     data,
     error,
+    loading,
     updatePage,
   } = useBrandFilters();
 
@@ -178,72 +180,78 @@ export default function BrandPageList() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="w-full bg-white h-auto rounded-md">
-        <div className="w-full h-full overflow-y-auto">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
-            <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  {g("_table_no")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_name")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_created_at")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {brandings?.map((branding, index) => {
-                return (
-                  <tr className="bg-white border-b" key={branding?.id}>
-                    <th scope="row" className="px-6 py-4">
-                      {(filters.page - 1) * filters.limit + index + 1}
-                    </th>
-                    <td className="px-6 py-4 truncate max-w-xs">
-                      {branding?.name}
-                    </td>
-                    <td className="px-6 py-4 truncate max-w-xs">
-                      {<StatusBadge status={branding.status} />}
-                    </td>
-                    <td className="px-6 py-4">
-                      {formatDateToDDMMYYYY(branding?.created_at)}
-                    </td>
-                    <td className="flex space-x-2 px-6 py-4">
-                      <EditIcon
-                        onClick={() => handleClickEditBranding(branding)}
-                        size={20}
-                        className="cursor-pointer"
-                      />
-                      <TrashIcon
-                        onClick={() => handleSelectBranding(branding)}
-                        size={20}
-                        className="cursor-pointer"
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[500px] w-full">
+          <Loading color="green" size="lg" />
         </div>
+      ) : (
+        <div className="w-full bg-white h-auto rounded-md">
+          <div className="w-full h-full overflow-y-auto">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
+              <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_table_no")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_name")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_created_at")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {brandings?.map((branding, index) => {
+                  return (
+                    <tr className="bg-white border-b" key={branding?.id}>
+                      <th scope="row" className="px-6 py-4">
+                        {(filters.page - 1) * filters.limit + index + 1}
+                      </th>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {branding?.name}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {<StatusBadge status={branding.status} />}
+                      </td>
+                      <td className="px-6 py-4">
+                        {formatDateToDDMMYYYY(branding?.created_at)}
+                      </td>
+                      <td className="flex space-x-2 px-6 py-4">
+                        <EditIcon
+                          onClick={() => handleClickEditBranding(branding)}
+                          size={20}
+                          className="cursor-pointer"
+                        />
+                        <TrashIcon
+                          onClick={() => handleSelectBranding(branding)}
+                          size={20}
+                          className="cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="text-gray-600 flex items-end justify-end">
-          <Pagination
-            filter={{ page: filters.page, limit: filters.limit }}
-            totalItems={totalItems}
-            onPageChange={handlePageChange}
-          />
+          <div className="text-gray-600 flex items-end justify-end">
+            <Pagination
+              filter={{ page: filters.page, limit: filters.limit }}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
-      </div>
+      )}
+
       <DeleteModal
         isOpen={isOpen}
         isLoading={isLoading}

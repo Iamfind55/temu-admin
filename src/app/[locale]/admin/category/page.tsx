@@ -23,6 +23,7 @@ import { AddIcon, EditIcon, TrashIcon } from "@/icons/page";
 // APIs
 import { DELETE_CATEGORY } from "@/api/category";
 import StatusBadge from "@/components/status";
+import Loading from "@/components/loading";
 
 export default function Category() {
   const g = useTranslations("globals");
@@ -44,6 +45,7 @@ export default function Category() {
     updateSortBy,
     data,
     error,
+    loading,
     updatePage,
   } = useCategoryFilters();
 
@@ -186,104 +188,111 @@ export default function Category() {
         </div>
       </div>
 
-      <div className="w-full bg-white h-auto rounded-md">
-        <div className="w-full h-full overflow-y-auto">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
-            <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  {g("_table_no")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_picture")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_name")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Parent category
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  {g("_created_at")}
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories?.map((category, index) => {
-                const imageLoading = imageLoadingStates[category?.id] ?? true;
-
-                return (
-                  <tr className="bg-white border-b" key={category?.id}>
-                    <th scope="row" className="px-6 py-4">
-                      {(filters.page - 1) * filters.limit + index + 1}
-                    </th>
-                    <td className="px-6 py-4">
-                      <div className="relative w-[60px] h-[60px]">
-                        {imageLoading && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
-                          </div>
-                        )}
-                        <img
-                          src={
-                            category?.oring_image_url ||
-                            "/images/placeholder_image.png"}
-                          width={60}
-                          height={60}
-                          alt="Picture of the category"
-                          onLoad={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
-                          onError={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
-                          className={imageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-200"}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 truncate max-w-xs">
-                      {category?.name}
-                    </td>
-                    <td className="px-6 py-4 truncate max-w-xs">
-                      {category?.parent_data?.name}
-                    </td>
-                    <td className="px-6 py-4 truncate max-w-xs">
-                      {<StatusBadge status={category.status} />}
-                    </td>
-                    <td className="px-6 py-4">
-                      {formatDateToDDMMYYYY(category?.created_at)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <EditIcon
-                          onClick={() => handleClickEditCategory(category)}
-                          size={20}
-                          className="cursor-pointer"
-                        />
-                        <TrashIcon
-                          onClick={() => handleSelectCategory(category)}
-                          size={20}
-                          className="cursor-pointer"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[500px] w-full">
+          <Loading color="green" size="lg" />
         </div>
+      ) : (
+        <div className="w-full bg-white h-auto rounded-md">
+          <div className="w-full h-full overflow-y-auto">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 border">
+              <thead className="text-xs text-gray-600 uppercase bg-gray-50 border-b">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_table_no")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_picture")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_name")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Parent category
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    {g("_created_at")}
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories?.map((category, index) => {
+                  const imageLoading = imageLoadingStates[category?.id] ?? true;
 
-        <div className="text-gray-600 flex items-end justify-end">
-          <Pagination
-            filter={{ page: filters.page, limit: filters.limit }}
-            totalItems={totalItems}
-            onPageChange={handlePageChange}
-          />
+                  return (
+                    <tr className="bg-white border-b" key={category?.id}>
+                      <th scope="row" className="px-6 py-4">
+                        {(filters.page - 1) * filters.limit + index + 1}
+                      </th>
+                      <td className="px-6 py-4">
+                        <div className="relative w-[60px] h-[60px]">
+                          {imageLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+                            </div>
+                          )}
+                          <img
+                            src={
+                              category?.oring_image_url ||
+                              "/images/placeholder_image.png"}
+                            width={60}
+                            height={60}
+                            alt="Picture of the category"
+                            onLoad={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
+                            onError={() => setImageLoadingStates(prev => ({ ...prev, [category?.id]: false }))}
+                            className={imageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-200"}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {category?.name}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {category?.parent_data?.name}
+                      </td>
+                      <td className="px-6 py-4 truncate max-w-xs">
+                        {<StatusBadge status={category.status} />}
+                      </td>
+                      <td className="px-6 py-4">
+                        {formatDateToDDMMYYYY(category?.created_at)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <EditIcon
+                            onClick={() => handleClickEditCategory(category)}
+                            size={20}
+                            className="cursor-pointer"
+                          />
+                          <TrashIcon
+                            onClick={() => handleSelectCategory(category)}
+                            size={20}
+                            className="cursor-pointer"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="text-gray-600 flex items-end justify-end">
+            <Pagination
+              filter={{ page: filters.page, limit: filters.limit }}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
-      </div>
+      )}
+
       <DeleteModal
         isOpen={isOpen}
         isLoading={isLoading}

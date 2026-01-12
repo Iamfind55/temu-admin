@@ -21,6 +21,7 @@ import { DELETE_PRODUCT } from "@/api/product";
 import { AddIcon, EditIcon, TrashIcon } from "@/icons/page";
 import EmptyPage from "@/components/emptyPage";
 import { useRouter } from "@/i18n/navigation";
+import Loading from "@/components/loading";
 
 export default function Product() {
   const g = useTranslations("globals");
@@ -44,6 +45,7 @@ export default function Product() {
     error,
     updatePage,
     updateProductVip,
+    loading
   } = useProductFilters();
 
   useEffect(() => {
@@ -211,7 +213,11 @@ export default function Product() {
       </div>
 
       {/* Table */}
-      {products?.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[500px] w-full">
+          <Loading color="green" size="lg" />
+        </div>
+      ) : (products?.length === 0) ? (
         <div className="w-full bg-white">
           <EmptyPage />
         </div>
@@ -258,7 +264,7 @@ export default function Product() {
               </thead>
               <tbody>
                 {products?.map((product, index) => {
-                  
+
                   return (
                     <tr className="bg-white border-b" key={product?.id}>
                       <th scope="row" className="px-6 py-4">
@@ -266,7 +272,7 @@ export default function Product() {
                       </th>
                       <td className="px-6 py-4">
                         <img
-                          src={product?.image_url??product?.origin_image_url}
+                          src={product?.image_url ?? product?.origin_image_url}
                           width={60}
                           height={60}
                           alt="Picture of the product"
@@ -277,7 +283,7 @@ export default function Product() {
                         {product?.categoryData?.name}
                       </td>
                       <td className="px-6 py-4 truncate max-w-xs">
-                        {product?.brandData?.name|| ""}
+                        {product?.brandData?.name || ""}
                       </td>
                       <td className="px-6 py-4 truncate max-w-xs">
                         {product?.product_vip || "0"}
@@ -291,15 +297,15 @@ export default function Product() {
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <EditIcon
-                          onClick={() => handleClickEditProduct(product)}
-                          size={20}
-                          className="cursor-pointer my-2"
-                        />
-                        <TrashIcon
-                          onClick={() => handleSelectProduct(product)}
-                          size={20}
-                          className="cursor-pointer my-2"
-                        />
+                            onClick={() => handleClickEditProduct(product)}
+                            size={20}
+                            className="cursor-pointer my-2"
+                          />
+                          <TrashIcon
+                            onClick={() => handleSelectProduct(product)}
+                            size={20}
+                            className="cursor-pointer my-2"
+                          />
                         </div>
                       </td>
                     </tr>

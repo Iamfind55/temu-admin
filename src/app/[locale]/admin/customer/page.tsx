@@ -480,7 +480,11 @@ export default function Customer() {
         </div>
         <div className="w-full h-auto mt-6">
           <div className="w-full hidden sm:block">
-            {fetchCustomers.total ?? 0 > 0 ? (
+            {fetchCustomers?.loading ? (
+              <div className="flex items-center justify-center min-h-[500px] w-full">
+                <Loading color="green" size="lg" />
+              </div>
+            ) : fetchCustomers.total ?? 0 > 0 ? (
               <table className="w-full bg-gray overflow-x-auto text-left text-sm rtl:text-right border rounded">
                 <thead className="sticky -top-5 text-xs bg-white">
                   <tr className="border-b border-gray text-left uppercase">
@@ -541,8 +545,8 @@ export default function Customer() {
                       </td>
                       <td
                         className={`py-3 pl-1 ${customer.customer_type === "FAKE"
-                            ? "text-red-500"
-                            : "text-green-500"
+                          ? "text-red-500"
+                          : "text-green-500"
                           }`}
                       >
                         {customer.customer_type}

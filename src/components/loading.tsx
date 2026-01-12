@@ -1,9 +1,28 @@
-export default function Loading() {
+interface LoadingProps {
+  color?: "gray" | "green" | "blue" | "red" | "white";
+  size?: "sm" | "md" | "lg";
+}
+
+export default function Loading({ color = "gray", size = "sm" }: LoadingProps) {
+  const colorClasses = {
+    gray: "text-gray-200 fill-white",
+    green: "text-green-200 fill-green-600",
+    blue: "text-blue-200 fill-blue-600",
+    red: "text-red-200 fill-red-600",
+    white: "text-white fill-gray-200",
+  };
+
+  const sizeClasses = {
+    sm: "w-3 h-3",
+    md: "w-6 h-6",
+    lg: "w-10 h-10",
+  };
+
   return (
     <div role="status">
       <svg
         aria-hidden="true"
-        className="w-3 h-3 text-gray-200 animate-spin fill-white"
+        className={`${sizeClasses[size]} ${colorClasses[color]} animate-spin`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
