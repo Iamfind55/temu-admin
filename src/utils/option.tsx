@@ -58,8 +58,8 @@ export const page_limits: any = [
 export const coin_type: any = [
   { label: "All", value: "" },
   { label: "BTC", value: "BTC" },
-  { label: "ERC20", value: "ERC20" },
-  { label: "TRC20", value: "TRC20" },
+  { label: "ETH", value: "ETH" },
+  { label: "TRX/USDT", value: "TRX/USDT" },
 ];
 
 export enum useStatus {
