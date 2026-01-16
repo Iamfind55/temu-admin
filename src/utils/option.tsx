@@ -28,10 +28,11 @@ export const LogisticsOpion: TypeOptions[] = [
 ];
 export const shop_status: any = [
   { label: "All", value: "" },
-  { label: "Frezen", value: "FROZEN" },
   { label: "Active", value: "ACTIVE" },
-  { label: "Inactive", value: "INACTIVE" },
+  { label: "APPROVED", value: "APPROVED" },
   { label: "Pending", value: "PENDING" },
+  { label: "Frezen", value: "FROZEN" },
+  { label: "Inactive", value: "INACTIVE" },
 ];
 
 export const vip_level: any = [

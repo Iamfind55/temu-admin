@@ -88,4 +88,5 @@ export enum EShopStatus {
   ACTIVE = "ACTIVE",
   FROZEN = "FROZEN",
   INACTIVE = "INACTIVE",
+  APPROVED = "APPROVED",
 }
