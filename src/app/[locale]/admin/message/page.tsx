@@ -671,9 +671,9 @@ export default function Message() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-green-300 text-green-800">
                         Shop
                       </span>
-                      {conversation.creator.shop_vip && (
+                      {conversation.creator?.shop_vip && (
                         <span className="absolute -top-1 -right-5 bg-primary text-white text-[10px]  p-1 flex items-center justify-center rounded-full">
-                          VIP{conversation.creator.shop_vip}
+                          VIP{conversation.creator?.shop_vip}
                         </span>
                       )}
                     </div>
