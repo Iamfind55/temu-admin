@@ -147,7 +147,7 @@ export default function ShopPageList() {
         variables: {
           data: {
             id: selectedShop?.id,
-            status: selectedShop?.status === "INACTIVE" ? "ACTIVE" : "INACTIVE",
+            status: selectedShop?.status === "FROZEN" ? "ACTIVE" : "FROZEN",
           },
         },
       });
@@ -561,7 +561,7 @@ export default function ShopPageList() {
               title={
                 isLoading
                   ? "BLOCKING...."
-                  : selectedShop?.status === "INACTIVE"
+                  : selectedShop?.status === "FROZEN"
                     ? "UNBLOCK"
                     : "BlOCK"
               }
