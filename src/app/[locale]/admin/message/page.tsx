@@ -47,11 +47,11 @@ export default function Message() {
           }
         }
       },
-      
+
     }
   );
 
- 
+
 
   React.useEffect(() => {
     if (!selectedConversation) return;
@@ -529,13 +529,16 @@ export default function Message() {
     }
   };
 
-  const formatTime = (date: Date) => {
-    return new Date(date).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
+  const formatTime = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+
+    return d.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Vientiane',
     });
   };
-
   const formatLastMessageTime = (date: Date | string) => {
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
@@ -673,7 +676,7 @@ export default function Message() {
                       </span>
                       {conversation.creator?.shop_vip && (
                         <span className="absolute -top-1 -right-5 bg-primary text-white text-[10px]  p-1 flex items-center justify-center rounded-full">
-                          VIP{conversation.creator.shop_vip}
+                          VIP{conversation.creator?.shop_vip}
                         </span>
                       )}
                     </div>
