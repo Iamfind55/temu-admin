@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Tiktokshop Online",
+  title: "Temustores Online",
   description:
-    "Tiktokshop is a leading e-commerce platform offering a seamless shopping experience with a wide range of products.",
+    "Temustores is a leading e-commerce platform offering a seamless shopping experience with a wide range of products.",
 };
 
 import "../globals.css";

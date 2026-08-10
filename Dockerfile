@@ -13,8 +13,11 @@ COPY public public
 COPY package.json package.json
 COPY . .
 
+# Build the production bundle
+RUN npm run build
+
 # Expose the correct port
-EXPOSE 3000
+EXPOSE 7000
 
 # Start Next.js in production mode
 CMD ["npm", "start"]

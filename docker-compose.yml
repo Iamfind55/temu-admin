@@ -8,9 +8,6 @@ services:
       - share-network
     env_file:
       - .env
-    volumes:
-      - ./public:/app/public
-      - ./.next:/app/.next
     ports:
       - "7000:7000"  # Bind container port 7000 to host port 7000
 networks:
